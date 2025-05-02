@@ -1,0 +1,19 @@
+@import "taro-ui/dist/style/index.scss";
+
+page {
+  background-color: #f8f8f8;
+  font-size: 28px;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica,
+    Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei',
+    sans-serif;
+  box-sizing: border-box;
+}
+
+view {
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 24px;
+}

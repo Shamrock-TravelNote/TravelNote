@@ -1,0 +1,24 @@
+.publish {
+  padding: 20px;
+
+  .publish-form {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+
+    .form-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .content-input {
+      width: 100%;
+      min-height: 300px;
+      padding: 16px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+  }
+}
