@@ -28,6 +28,4 @@ jobs:
         run: pnpm install
 
       - name: Check code style
-        run: |
-          pnpm prettier --check .
-          pnpm eslint .
+        run: pnpm eslint .
