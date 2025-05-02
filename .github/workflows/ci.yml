@@ -1,4 +1,4 @@
-name: CI
+name: Code Check
 
 on:
   push:
@@ -7,11 +7,11 @@ on:
     branches: [develop, main]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -19,7 +19,7 @@ jobs:
           version: 8
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: "16"
           cache: "pnpm"
@@ -31,30 +31,3 @@ jobs:
         run: |
           pnpm prettier --check .
           pnpm eslint .
-
-      - name: Build Check
-        run: |
-          pnpm build:weapp
-          pnpm build:h5
-
-      - name: Package Artifacts
-        run: |
-          cd dist
-          zip -r weapp.zip weapp/
-          zip -r h5.zip h5/
-
-      - name: Upload WeApp Build
-        uses: actions/upload-artifact@v3
-        with:
-          name: weapp-build
-          path: dist/weapp.zip
-          retention-days: 5
-          if-no-files-found: error
-
-      - name: Upload H5 Build
-        uses: actions/upload-artifact@v3
-        with:
-          name: h5-build
-          path: dist/h5.zip
-          retention-days: 5
-          if-no-files-found: error
