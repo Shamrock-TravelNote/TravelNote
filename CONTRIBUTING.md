@@ -25,10 +25,31 @@ git commit -m "feat: 添加xxx功能"
 
 4. 合并最新develop
 ```bash
+# 切换到develop分支
 git checkout develop
+# 拉取远程最新代码
 git pull origin develop
+# 切换回功能分支
 git checkout feature/your-feature
+# 重新基准化 - 这会把你的修改建立在最新的develop之上
 git rebase develop
+```
+
+注意：
+- rebase会重写提交历史，使提交记录更加整洁
+- 如果出现冲突，需要手动解决每个提交的冲突
+- 解决冲突后使用 git rebase --continue 继续
+- 如果要取消rebase，使用 git rebase --abort
+
+如果rebase过程中遇到冲突：
+```bash
+# 1. 解决冲突的文件
+# 2. 添加修改的文件
+git add .
+# 3. 继续rebase
+git rebase --continue
+# 如果想取消rebase
+git rebase --abort
 ```
 
 5. 推送分支并创建PR
