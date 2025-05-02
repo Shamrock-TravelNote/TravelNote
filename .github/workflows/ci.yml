@@ -37,8 +37,24 @@ jobs:
           pnpm build:weapp
           pnpm build:h5
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Package Artifacts
+        run: |
+          cd dist
+          zip -r weapp.zip weapp/
+          zip -r h5.zip h5/
+
+      - name: Upload WeApp Build
+        uses: actions/upload-artifact@v3
         with:
-          name: dist
-          path: dist/
+          name: weapp-build
+          path: dist/weapp.zip
+          retention-days: 5
+          if-no-files-found: error
+
+      - name: Upload H5 Build
+        uses: actions/upload-artifact@v3
+        with:
+          name: h5-build
+          path: dist/h5.zip
+          retention-days: 5
+          if-no-files-found: error
