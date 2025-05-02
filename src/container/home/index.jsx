@@ -20,7 +20,8 @@ const Home = () => {
       cover: 'http://www.citsguilin.com/pic/guonei/hangzhou/xi-hu-02.jpg',
       author: '小红',
       likes: 321,
-      views: 654
+      views: 654,
+      test: 'test'
     }
   ]
 
