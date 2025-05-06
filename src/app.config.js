@@ -1,11 +1,5 @@
 export default defineAppConfig({
-  pages: [
-    "pages/index/index",
-    "container/auth/index",
-    "container/home/index",
-    "container/publish/index",
-    "container/profile/index",
-  ],
+  pages: ["pages/index/index", "pages/login/index", "pages/search/index"],
   usingComponents: {},
   subPackages: [],
   window: {
