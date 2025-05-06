@@ -1,10 +1,7 @@
 name: Code Check
 
 on:
-  push:
-    branches: [develop, main]
-  pull_request:
-    branches: [develop, main]
+  workflow_dispatch: # 只保留手动触发
 
 jobs:
   lint:
