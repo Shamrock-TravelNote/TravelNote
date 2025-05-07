@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
-import { useUserStore } from '@/store'
 // import CustomTabBar from '@/custom-tab-bar'
+import { useUserStore, checkUserLoggedIn } from '@/store'
 import './index.scss'
 import { use } from 'react'
 
@@ -11,6 +11,7 @@ const Profile = () => {
   }))
 
   useDidShow(() => {
+    checkUserLoggedIn()
     setActiveTabIndex(2)
   }
   )

@@ -1,7 +1,15 @@
 import { View, Text, Image } from '@tarojs/components'
+import { useDidShow } from '@tarojs/taro'
+import { useUserStore, checkUserLoggedIn } from '@/store'
 import './index.scss'
 
 const TravelDetail = () => {
+
+  useDidShow(() => {
+    checkUserLoggedIn()
+  }
+  )
+
   return (
     <View className='travel-detail'>
       <View className='detail-header'>

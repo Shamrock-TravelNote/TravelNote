@@ -43,26 +43,19 @@ export const useUserStore = create(
 
 // 获取登陆状态
 export const checkUserLoggedIn = () => {
-  const tokenFromStorage = Taro.getStorageSync("user-storage");
-  if (tokenFromStorage) {
-    return true;
-  }
-  return false;
-};
-
-// 重写检查登录状态的函数
-export const checkLogin = () => {
   const { token, userInfo } = useUserStore.getState();
+
   if (!token || !userInfo) {
-    Taro.showToast({
-      title: "请先登录",
-      icon: "none",
-      duration: 2000,
-    });
-    Taro.navigateTo({
-      url: "/pages/login/index",
-    });
-    return false;
+    const pages = Taro.getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+
+    // 如果当前页面不是登录页，则跳转到登录页
+    if (currentPage?.route !== "pages/login/index") {
+      Taro.redirectTo({
+        url: "/pages/login/index",
+      });
+      return false;
+    }
   }
   return true;
 };

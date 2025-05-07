@@ -1,7 +1,7 @@
 import { View, Text, Input, Button } from '@tarojs/components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
-import { useUserStore } from '../../store/userStore'
+import { checkUserLoggedIn, useUserStore } from '../../store/userStore'
 import services from '../../services'
 import './index.scss'
 
@@ -17,6 +17,7 @@ const Auth = () => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
+  // 修改 handleSubmit 中的跳转逻辑
   const handleSubmit = async () => {
     try {
       const service = isLogin ? services.auth.login : services.auth.register
@@ -24,14 +25,16 @@ const Auth = () => {
       if (res.data) {
         setToken(res.data.token)
         setUserInfo(res.data.userInfo)
-        Taro.showToast({
-          title: isLogin ? '登录成功' : '注册成功',
-          icon: 'success',
-          duration: 2000,
-          success: () => {
-            Taro.switchTab({ url: '/pages/index/index' })
-          }
-        })
+        
+        // 获取页面栈
+        const pages = Taro.getCurrentPages()
+        if (pages.length > 1) {
+          // 如果有上一页，则返回上一页
+          Taro.navigateBack()
+        } else {
+          // 否则跳转到首页
+          Taro.switchTab({ url: '/pages/index/index' })
+        }
       }
     } catch (error) {
       Taro.showToast({
@@ -40,6 +43,25 @@ const Auth = () => {
       })
     }
   }
+
+  // 移除之前的返回事件处理
+  useEffect(() => {
+    const pages = Taro.getCurrentPages()
+    // 如果是直接打开的登录页，添加返回按钮监听
+    if (pages.length <= 1) {
+      const handleBackPress = () => {
+        Taro.switchTab({
+          url: '/pages/home/index'
+        })
+        return true
+      }
+      
+      Taro.eventCenter.on('backPress', handleBackPress)
+      return () => {
+        Taro.eventCenter.off('backPress', handleBackPress)
+      }
+    }
+  }, [])
 
   return (
     <View className='auth'>

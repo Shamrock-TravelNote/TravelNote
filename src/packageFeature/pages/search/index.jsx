@@ -2,11 +2,18 @@ import { View, Input } from '@tarojs/components'
 import { useState } from 'react'
 import { AtIcon } from 'taro-ui'
 import TravelCard from '@/components/TravelCard'
+import { useDidShow } from '@tarojs/taro'
+import { useUserStore, checkUserLoggedIn } from '@/store'
 import './index.scss'
 
 const SearchPage = () => {
   const [keyword, setKeyword] = useState('')
   const [searchResults, setSearchResults] = useState([])
+
+  useDidShow(() => {
+    checkUserLoggedIn()
+  }
+  )
 
   const handleInput = (e) => {
     setKeyword(e.detail.value)
