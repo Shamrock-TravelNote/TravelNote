@@ -3,12 +3,28 @@ import { useState } from 'react'
 import { AtImagePicker, AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro'
 import uploadApi from '@/services/api/upload'
+// import withAuth from '@/hoc/withAuth'
+import { useUserStore, checkLogin } from '@/store'
+// import CustomTabBar from '@/custom-tab-bar'
 import './index.scss'
 
+// TODO: 封装上传组件，支持图片和视频上传，保证两者互斥，最好不用系统原生照片库，实现类似抖音、小红书的
 const Publish = () => {
+  const { setActiveTabIndex } = useUserStore(state => ({
+    setActiveTabIndex: state.setActiveTabIndex
+  }))
+  const { userInfo } = useUserStore()
   const [files, setFiles] = useState([])
   const [content, setContent] = useState('')
   const [uploading, setUploading] = useState(false)
+
+  onDidShow(() => {
+    setActiveTabIndex(1)
+  })
+  
+  if(!userInfo) {
+    return <view>请先登录</view>
+  }
 
   // 处理图片选择
   const handleImageChange = (newFiles) => {

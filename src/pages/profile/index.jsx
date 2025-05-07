@@ -1,7 +1,20 @@
 import { View, Text } from '@tarojs/components'
+import Taro, { useDidShow } from '@tarojs/taro'
+import { useUserStore } from '@/store'
+// import CustomTabBar from '@/custom-tab-bar'
 import './index.scss'
+import { use } from 'react'
 
 const Profile = () => {
+  const { setActiveTabIndex } = useUserStore(state => ({
+    setActiveTabIndex: state.setActiveTabIndex
+  }))
+
+  useDidShow(() => {
+    setActiveTabIndex(2)
+  }
+  )
+  
   const userStats = {
     posts: 12,
     followers: 234,

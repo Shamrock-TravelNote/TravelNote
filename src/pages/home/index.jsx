@@ -1,14 +1,24 @@
 import { View } from '@tarojs/components'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import SearchBar from '@/components/SearchBar'
 import TravelCard from '@/components/TravelCard'
 import travel from '@/services/api/travel'
+import Taro, { useDidShow } from '@tarojs/taro'
+import { useUserStore } from '@/store'
+// import CustomTabBar from '@/custom-tab-bar'
 import './index.scss'
 
 const Home = () => {
+  const setActiveTabIndex = useUserStore(state => state.setActiveTabIndex)
   const [travelNotes, setTravelNotes] = useState([])
   const [loading, setLoading] = useState(false)
 
+  // const page = useMemo(() => Taro.getCurrentInstance().page, [])
+  
+  useDidShow(() => {
+    setActiveTabIndex(0)
+  })
+  
   useEffect(() => {
     fetchTravelNotes()
   }, [])
