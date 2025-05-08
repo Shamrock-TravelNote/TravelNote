@@ -15,6 +15,11 @@ const Home = () => {
   const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
+
+  const gridAutoRows = 5; // As defined in your CSS! IMPORTANT
+  const verticalCardHeight = 550; // As defined in your CSS!
+  const horizontalCardHeight = 390; // As defined in your CSS!
+
   
   useDidShow(() => {
     setActiveTabIndex(0)
@@ -23,6 +28,16 @@ const Home = () => {
   useEffect(() => {
     fetchTravelNotes(1, true)
   }, [])
+
+  // useEffect(() => {
+  //       if (cardRefs.current && cardRefs.current.length > 0) {
+  //           cardRefs.current.forEach((cardRef, index) => {
+  //               if (cardRef) {
+  //                   handleSetGridRowEnd(index);
+  //               }
+  //           });
+  //       }
+  //   }, [travelNotes]);
 
   const fetchTravelNotes = async (pageToFetch, isRefresh = false) => {
     if (loading || (!isRefresh && !hasMore)) {
@@ -74,14 +89,31 @@ const Home = () => {
     Taro.stopPullDownRefresh()
   })
 
+  // const handleSetGridRowEnd = useCallback((index) => {
+  //       if (!cardRefs.current) return;
+  //       const cardRef = cardRefs.current[index];
+  //       if (!cardRef) return;
+  //       const height = cardRef.offsetHeight;
+  //       cardRef.style.gridRowEnd = `span ${Math.ceil(height)}`;
+  //   }, []);
+
+
   return (
     <View className='home'>
       <SearchBar />
       <View className='content'>
         <View className='travel-list'>
-          {travelNotes.map(note => (
-            <TravelCard key={note.id} data={note} />
-          ))}
+          {travelNotes.map(note => {
+            let cardHeight = note.mediaType === 'video' ? (note.detailType === 'vertical' ? 550 : 390) : (note.detailType === 'vertical' ? 550 : 390);
+            const rowSpan = Math.ceil(cardHeight / gridAutoRows);
+            console.log(`note.imageType: ${note.detailType}, cardHeight: ${cardHeight}, rowSpan: ${rowSpan}`); 
+              return (
+              <TravelCard
+                key={note.id}
+                data={{...note, rowSpan }}
+              />
+            )
+          })}
           {loading && <View className='loading'>加载中...</View>}
           {!hasMore && travelNotes.length > 0 && (
             <View className='no-more'>没有更多数据了</View>

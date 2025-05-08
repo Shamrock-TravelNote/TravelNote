@@ -56,5 +56,16 @@
         font-size: 28px;
       }
     }
+
+    .travel-list {
+      display: block;
+      columns: 2;
+      column-gap: 20px;
+      background: #fff;
+      border-radius: 12px;
+          padding: 16px;
+          box-sizing: border-box;
+          width: 100%;
+    }
   }
 }

@@ -59,7 +59,11 @@ const TravelCard = ({ data }) => {
   }
 
   return (
-    <View className={`travel-card ${imageType}`} onClick={handleCardClick}>
+    <View
+      className={`travel-card ${imageType}`}
+      onClick={handleCardClick}
+      style={{ gridRowEnd: `span ${data.rowSpan}` }}
+    >
       <Image 
         className='card-image' 
         src={data.cover} 

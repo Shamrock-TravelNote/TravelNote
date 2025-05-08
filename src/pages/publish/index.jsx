@@ -5,6 +5,7 @@ import { AtImagePicker, AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro'
 import uploadApi from '@/services/api/upload'
 import { useUserStore, checkUserLoggedIn } from '@/store'
+import MediaPicker from '@/components/MediaPicker'
 import './index.scss'
 
 const Publish = () => {
@@ -23,7 +24,7 @@ const Publish = () => {
   })
 
   // 处理图片选择
-  const handleImageChange = (newFiles) => {
+  const handleMediaChange = (newFiles) => {
     setFiles(newFiles)
   }
 
@@ -88,13 +89,19 @@ const Publish = () => {
     <View className='publish'>
       <View className='publish-form'>
         <Text className='form-title'>发布游记</Text>
-        <AtImagePicker
+        {/* <AtImagePicker
           files={files}
-          onChange={handleImageChange}
+          onChange={handleMediaChange}
           onRemove={handleImageRemove}
           showAddBtn={files.length < 9}
           multiple
           count={9}
+        /> */}
+        <MediaPicker
+          value={files}
+          maxCount={9}
+          onChange={handleMediaChange}
+          // onRemove={handleImageRemove}
         />
         <Textarea
           className='content-input'

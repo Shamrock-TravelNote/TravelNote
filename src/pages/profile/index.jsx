@@ -87,6 +87,7 @@ const Profile = () => {
           current={current} 
           onClick={setCurrent} 
           tabList={tabList}
+          className='travel-list'
         >
           <View className='travel-list'>
             {travelNotesByTab[current]?.map(note => (

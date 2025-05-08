@@ -1,6 +1,9 @@
 .travel-card {
   // width: calc((100% - 20px) / 2);
+  grid-row-start: auto;
+  // grid-row-end: span 180;
   width: 100%;
+  height: fit-content;
   align-self: flex-start;
   margin: 0;
   background: #fff;
@@ -14,14 +17,14 @@
   break-inside: avoid;
 
   &.vertical {
-    height: 550px;  
+    height: 550px;
     .card-image {
       height: 400px;
     }
   }
 
   &.horizontal {
-    height: 390px;  
+    height: 390px;
     .card-image {
       height: 240px;
     }
