@@ -13,6 +13,7 @@ export default defineAppConfig({
       pages: ["pages/detail/index", "pages/search/index"],
     },
   ],
+  enablepullDownRefresh: true,
   usingComponents: {},
   window: {
     backgroundTextStyle: "light",
