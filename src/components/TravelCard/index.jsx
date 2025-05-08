@@ -1,19 +1,22 @@
 import { View, Text, Image } from '@tarojs/components'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AtIcon } from 'taro-ui'
 import './index.scss'
 
 const TravelCard = ({ data }) => {
   const [isLiked, setIsLiked] = useState(false)
-  const [likes, setLikes] = useState(data.likes)
+  const [likes, setLikes] = useState(0)
+
+  useEffect(() => {
+    setLikes(data.likes)
+  }, [data.likes])
 
   const handleLike = () => {
-    if (isLiked) {
-      setLikes(prev => prev - 1)
-    } else {
-      setLikes(prev => prev + 1)
-    }
-    setIsLiked(!isLiked)
+    setIsLiked(prev => {
+      const newIsLiked = !prev
+      setLikes(current => newIsLiked ? current + 1 : current - 1)
+      return newIsLiked
+    })
   }
 
   return (
