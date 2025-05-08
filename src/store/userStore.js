@@ -44,6 +44,8 @@ export const useUserStore = create(
 // 获取登陆状态
 export const checkUserLoggedIn = () => {
   const { token, userInfo } = useUserStore.getState();
+  console.log("checkUserLoggedIn: token:", token);
+  console.log("checkUserLoggedIn: userInfo:", userInfo);
 
   if (!token || !userInfo) {
     const pages = Taro.getCurrentPages();

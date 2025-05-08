@@ -1,20 +1,45 @@
 import axios from "axios";
 import Taro from "@tarojs/taro";
 import { API_CONFIG } from "./config";
+import { TaroAdapter } from "axios-taro-adapter";
 
-const instance = axios.create(API_CONFIG);
+const instance = axios.create({ ...API_CONFIG, adapter: TaroAdapter });
+
+// const instance = axios.create({ API_CONFIG });
 
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
+    // 添加更详细的请求日志
+    console.log("完整请求配置:", {
+      url: config.url,
+      baseURL: config.baseURL,
+      method: config.method,
+      headers: config.headers,
+      data: config.data,
+      fullPath: `${config.baseURL || ""}${config.url}`,
+    });
+
+    // 验证baseURL
+    if (!config.baseURL) {
+      console.warn("Warning: baseURL is not set in API_CONFIG");
+    }
+
     // 从本地获取token
     const token = Taro.getStorageSync("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // 确保请求头包含正确的 Content-Type
+    if (!config.headers["Content-Type"]) {
+      config.headers["Content-Type"] = "application/json";
+    }
+
     return config;
   },
   (error) => {
+    console.error("Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -22,14 +47,23 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response) => {
-    const { data } = response;
-    // 这里可以根据后端返回的数据结构进行适当的处理
-    if (data.code === 200) {
-      return data.data;
+    console.log("Response:", response.config.url, response.data);
+    if (response) {
+      return response.data || response;
     }
-    return Promise.reject(data);
   },
   (error) => {
+    console.error("Response Error:", error);
+
+    if (!error.response) {
+      // 处理网络错误
+      Taro.showToast({
+        title: "网络连接失败，请检查网络设置",
+        icon: "none",
+      });
+      return Promise.reject(new Error("Network Error"));
+    }
+
     if (error.response) {
       switch (error.response.status) {
         case 401:

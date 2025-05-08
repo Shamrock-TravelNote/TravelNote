@@ -59,6 +59,7 @@
     "@tarojs/shared": "4.0.12",
     "@tarojs/taro": "4.0.12",
     "axios": "^1.9.0",
+    "axios-taro-adapter": "^0.0.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "taro-ui": "^3.3.0",

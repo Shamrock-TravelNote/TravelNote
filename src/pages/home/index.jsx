@@ -10,7 +10,10 @@ import './index.scss'
 
 const Home = () => {
   const setActiveTabIndex = useUserStore(state => state.setActiveTabIndex)
-  const [travelNotes, setTravelNotes] = useState([])
+  const [travelNotes, setTravelNotes] = useState([{
+    title: '游记标题',
+    content: '游记内容',
+  }])
   const [loading, setLoading] = useState(false)
 
   // const page = useMemo(() => Taro.getCurrentInstance().page, [])

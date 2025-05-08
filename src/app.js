@@ -1,8 +1,5 @@
 import { useLaunch } from "@tarojs/taro";
-import API from "./services";
 import "./app.scss";
-
-global.$api = API;
 
 function App({ children }) {
   useLaunch(() => {
