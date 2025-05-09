@@ -1,15 +1,24 @@
-import { View, Text } from '@tarojs/components'
+import { View, Text, Image, ScrollView, GridView } from '@tarojs/components'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { useState, useMemo } from 'react'
 import { useUserStore, checkUserLoggedIn } from '@/store'
 import TravelCard from '@/components/TravelCard'
 import TravelPane from '@/components/TravelPane'
+import WaterFall from '../../components/WaterFall'
 import './index.scss'
 
 const Profile = () => {
   const [current, setCurrent] = useState(0)
+  const userInfo = useUserStore(state => state.userInfo);
   const activeTabIndex = useUserStore(state => state.activeTabIndex);
   const setActiveTabIndex = useUserStore(state => state.setActiveTabIndex);
+
+  const getItemSize = index => {
+    const note = travelNotesByTab[current][index]
+    return note.mediaType === 'video'
+      ? (note.detailType === 'vertical' ? 540 : 380)
+      : (note.detailType === 'vertical' ? 520 : 360)
+  }
 
   // 定义标签页列表
   const tabList = [
@@ -64,9 +73,14 @@ const Profile = () => {
     <View className='profile'>
       <View className='user-info'>
         <View className='avatar-wrapper'>
-          <Text>头像</Text>
+          <Image
+            className='avatar'
+            mode='aspectFill'
+            lazyLoad
+            src={userInfo?.avatar || 'https://travelnote-data.oss-cn-nanjing.aliyuncs.com/Gemini_Generated_Image_49ztd749ztd749zt.jpeg'}
+          />
         </View>
-        <Text className='nickname'>旅行者001</Text>
+        <Text className='nickname'>{ userInfo?.nickname || '旅行者' }</Text>
       </View>
       <View className='user-stats'>
         <View className='stat-item'>
@@ -89,11 +103,30 @@ const Profile = () => {
           tabList={tabList}
           className='travel-list'
         >
-          <View className='travel-list'>
-            {travelNotesByTab[current]?.map(note => (
-              <TravelCard key={note.id} data={note} />
-            ))}
-          </View>
+          <WaterFall isProfile={true}/>
+          {/* <ScrollView
+            className='scroll-view'
+            scrollY
+            scrollWithAnimation
+            // onScroll={ }
+          >
+            <GridView
+              type='masonry'
+              crossAxisCount={2}
+              mainAxisGap={10}
+              crossAxisGap={10}
+              onItemSize={getItemSize}
+            >
+              {travelNotesByTab[current].map(note => {
+              return (
+                <TravelCard
+                  key={note.id}
+                  data={{...note}}
+                />
+              )
+            })}
+            </GridView>
+          </ScrollView> */}
         </TravelPane>
       </View>
     </View>

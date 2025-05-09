@@ -14,6 +14,7 @@ const customInterceptor = function (chain) {
     const persistedUserState = Taro.getStorageSync("user-storage");
     if (persistedUserState) {
       const userState = JSON.parse(persistedUserState);
+      // console.log("userState", userState.state);
       if (userState && userState.state && userState.state.token) {
         token = userState.state.token;
       }
@@ -50,7 +51,7 @@ const customInterceptor = function (chain) {
     .proceed(requestParams)
     .then((res) => {
       // 响应拦截逻辑
-      console.log(`Taro.request: 收到来自 ${url} 的响应:`, res);
+      // console.log(`Taro.request: 收到来自 ${url} 的响应:`, res);
 
       // 示例：统一处理 HTTP 错误状态码
       // 注意：Taro.request 的成功回调 (then) 包含了服务器返回的各种 HTTP 状态码

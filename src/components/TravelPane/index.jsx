@@ -11,7 +11,7 @@ const TravelPane = ({ current, onClick, tabList, children }) => {
   }, [current, tabList.length, children])
 
   return (
-    <AtTabs current={current} tabList={tabList} onClick={onClick} animated={false}>
+    <AtTabs current={current} tabList={tabList} onClick={onClick} animated={true} swipeable={true}>
       {tabPanes}
     </AtTabs>
   )

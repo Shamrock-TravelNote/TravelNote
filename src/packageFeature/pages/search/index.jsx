@@ -6,6 +6,8 @@ import { useDidShow } from '@tarojs/taro'
 import { useUserStore, checkUserLoggedIn } from '@/store'
 import './index.scss'
 
+// TODO: 实现搜索逻辑
+// TODO: 搜索页面设计：搜索推荐词（待定）、最近搜索（待定）
 const SearchPage = () => {
   const [keyword, setKeyword] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -20,7 +22,7 @@ const SearchPage = () => {
   }
 
   const handleSearch = () => {
-    // TODO: 实现搜索逻辑
+
     const mockResults = [
       {
         id: 1,

@@ -1,35 +1,23 @@
 import { View, ScrollView, GridView } from '@tarojs/components'
+import { AtLoadMore } from 'taro-ui'
 import { useEffect, useRef, useState } from 'react'
-import SearchBar from '@/components/SearchBar'
 import TravelCard from '@/components/TravelCard'
-import WaterFall from '../../components/WaterFall'
 import travel from '@/services/api/travel'
-import Taro, { useDidShow, useReachBottom, usePullDownRefresh } from '@tarojs/taro'
+import Taro, { useDidShow, usePullDownRefresh } from '@tarojs/taro'
 import { useUserStore } from '@/store'
-// import React from 'react'
 import './index.scss'
 
 const PAGE_LIMIT = 10
 const SCROLL_THRESHOLD = 400
 
-// const WaterfallItem = React.memo(({ id, index, data }) => {
-//   const note = data[index]
-//   return <TravelCard key={note.id} data={note} />
-// })
-
-const Home = () => {
+const WaterFall = ({keyword='', isProfile=false}) => {
   const scrollViewRef = useRef(null)
   const [scrollViewHeight, setScrollViewHeight] = useState('100vh')
 
-  const setActiveTabIndex = useUserStore(state => state.setActiveTabIndex)
   const [travelNotes, setTravelNotes] = useState([])
   const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
-
-  // const gridAutoRows = 5; // As defined in your CSS! IMPORTANT
-  // const verticalCardHeight = 550; // As defined in your CSS!
-  // const horizontalCardHeight = 390; // As defined in your CSS!
 
   // 计算单项高度逻辑，与原 Grid 计算保持一致
   const getItemSize = index => {
@@ -38,10 +26,6 @@ const Home = () => {
       ? (note.detailType === 'vertical' ? 540 : 380)
       : (note.detailType === 'vertical' ? 520 : 360)
   }
-
-  useDidShow(() => {
-    setActiveTabIndex(0)
-  })
   
   useEffect(() => {
     fetchTravelNotes(1, true)
@@ -56,15 +40,6 @@ const Home = () => {
     });
   }, [])
 
-  // useEffect(() => {
-  //       if (cardRefs.current && cardRefs.current.length > 0) {
-  //           cardRefs.current.forEach((cardRef, index) => {
-  //               if (cardRef) {
-  //                   handleSetGridRowEnd(index);
-  //               }
-  //           });
-  //       }
-  //   }, [travelNotes]);
 
   const fetchTravelNotes = async (pageToFetch, isRefresh = false) => {
     if (loading || (!isRefresh && !hasMore)) {
@@ -73,8 +48,17 @@ const Home = () => {
 
     setLoading(true)
     try {
+      let response
       // 获取游记列表
-      const response = await travel.getTravelList({ page: pageToFetch, limit: PAGE_LIMIT })
+      if (!isProfile) {
+        console.log('normal')
+        response = await travel.getTravelList({ page: pageToFetch, limit: PAGE_LIMIT })
+        console.log(response)
+      } else {
+        console.log('profile')
+        response = await travel.getMyTravelList({ page: pageToFetch, limit: PAGE_LIMIT })
+      }
+      
 
       const newTravelNotes = response.data || []
       const totalNotes = response.total || 0
@@ -97,7 +81,14 @@ const Home = () => {
     } catch (error) {
       console.error(`获取游记列表第 ${pageToFetch} 页失败`, error)
     } finally {
-      setLoading(false)
+      // TODO: 防止切换页面时产生界面闪烁，设置合适的Loading界面
+      if (!isProfile) {
+        setLoading(false)
+      } else {
+        setTimeout(() => {
+          setLoading(false)
+        }, 1800);
+      }
     }
   }
 
@@ -113,13 +104,6 @@ const Home = () => {
     }
   };
 
-  // useReachBottom(() => {
-  //   console.log('触底加载更多')
-  //   if (hasMore && !loading) {
-  //     fetchTravelNotes(currentPage + 1)
-  //   }
-  // })
-
   usePullDownRefresh(async() => {
     console.log('下拉刷新')
     setCurrentPage(1)
@@ -128,28 +112,10 @@ const Home = () => {
     Taro.stopPullDownRefresh()
   })
 
-  // // 虚拟瀑布流触底加载
-  // const handleScrollToLower = () => {
-  //   if (hasMore && !loading) fetchTravelNotes(currentPage + 1)
-  // }
-
-  // const handleSetGridRowEnd = useCallback((index) => {
-  //       if (!cardRefs.current) return;
-  //       const cardRef = cardRefs.current[index];
-  //       if (!cardRef) return;
-  //       const height = cardRef.offsetHeight;
-  //       cardRef.style.gridRowEnd = `span ${Math.ceil(height)}`;
-  //   }, []);
-
-
   return (
     <View className='home'>
-      <View className='header'>
-        <SearchBar />
-      </View>
       <View className='content'>
-        <WaterFall/>
-        {/* <ScrollView
+        <ScrollView
           ref={scrollViewRef}
           className='scroll-view'
           scrollY
@@ -179,10 +145,16 @@ const Home = () => {
               )
             })}
           </GridView>
-        </ScrollView> */}
+          <AtLoadMore
+            status={loading ? 'loading' : hasMore ? 'more' : 'noMore'}
+            noMoreText='没有更多了'
+            moreBtnText='加载更多'
+            loadingText='加载中...'
+          />
+        </ScrollView>
       </View>
     </View>
   )
 }
 
-export default Home
+export default WaterFall

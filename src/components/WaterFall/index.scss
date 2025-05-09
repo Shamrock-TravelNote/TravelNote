@@ -3,16 +3,6 @@
   flex-direction: column;
   height: 100vh;
 
-  .header {
-    // padding: 20px;
-    flex-shrink: 0;
-    // background: #fff;
-    // .title {
-    //   font-size: 36px;
-    //   font-weight: bold;
-    // }
-  }
-
   .content {
     flex: 1;
     overflow: hidden;
@@ -41,22 +31,4 @@
     }
   }
 
-  .search-bar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    // margin: 24px;
-    padding: 16px 24px;
-    background: #f6f6f6;
-    border-radius: 36px;
-    
-    .at-icon {
-      font-size: 32px;
-    }
-
-    .placeholder {
-      color: #999;
-      font-size: 28px;
-    }
-  }
 }

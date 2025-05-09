@@ -9,6 +9,9 @@ import MediaPicker from '@/components/MediaPicker'
 import { upload, travel } from '@/services'
 import './index.scss'
 
+// TODO: 上传按钮样式优化
+// TODO: 上传检查互斥类型逻辑优化
+// TODO: 发布成功后跳转至详细页中
 const Publish = () => {
   // 使用 useCallback 来缓存选择器
   const setActiveTabIndex = useUserStore(useCallback(state => state.setActiveTabIndex, []))

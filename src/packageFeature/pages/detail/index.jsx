@@ -3,6 +3,8 @@ import { useDidShow } from '@tarojs/taro'
 import { useUserStore, checkUserLoggedIn } from '@/store'
 import './index.scss'
 
+// TODO: API获取数据
+// TODO: 评论区（待定）
 const TravelDetail = () => {
 
   useDidShow(() => {
