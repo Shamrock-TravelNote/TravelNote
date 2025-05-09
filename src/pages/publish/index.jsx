@@ -1,11 +1,12 @@
-import { View, Text, Textarea } from '@tarojs/components'
+import { View, Text, Textarea, Input } from '@tarojs/components'
 import { useState, useCallback } from 'react'
 import { useDidShow } from '@tarojs/taro'
 import { AtImagePicker, AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro'
-import uploadApi from '@/services/api/upload'
+// import uploadApi from '@/services/api/upload'
 import { useUserStore, checkUserLoggedIn } from '@/store'
 import MediaPicker from '@/components/MediaPicker'
+import { upload, travel } from '@/services'
 import './index.scss'
 
 const Publish = () => {
@@ -15,6 +16,7 @@ const Publish = () => {
   
   const [files, setFiles] = useState([])
   const [content, setContent] = useState('')
+  const [title, setTitle] = useState('')
   const [uploading, setUploading] = useState(false)
 
   useDidShow(() => {
@@ -25,6 +27,7 @@ const Publish = () => {
 
   // 处理图片选择
   const handleMediaChange = (newFiles) => {
+    console.log('选择的文件:', newFiles)
     setFiles(newFiles)
   }
 
@@ -42,7 +45,7 @@ const Publish = () => {
   // 处理单个图片上传
   const uploadImage = async (tempFilePath) => {
     try {
-      const fileUrl = await uploadApi.uploadTempFile(tempFilePath)
+      const fileUrl = await upload.uploadTempFile(tempFilePath)
       return fileUrl
     } catch (error) {
       console.error('图片上传失败:', error)
@@ -58,21 +61,23 @@ const Publish = () => {
     }
 
     if (files.length === 0) {
-      Taro.showToast({ title: '请至少上传一张图片', icon: 'none' })
+      Taro.showToast({ title: '请至少上传一张图片或视频', icon: 'none' })
       return
     }
 
     try {
       setUploading(true)
-      const uploadedFiles = await Promise.all(
-        files.map(file => uploadImage(file.url))
-      )
+      console.log('files:', files)
+      // const uploadedFiles = await Promise.all(
+      //   files.map(file => uploadImage(file.url))
+      // )
 
       // 这里可以调用创建游记的 API
-      await createTravel({
-        content,
-        images: uploadedFiles
-      })
+      // await travel.createTravel({
+      //   title,
+      //   content,
+      //   images: uploadedFiles
+      // })
 
       Taro.showToast({ title: '发布成功', icon: 'success' })
       setFiles([])
@@ -102,6 +107,12 @@ const Publish = () => {
           maxCount={9}
           onChange={handleMediaChange}
           // onRemove={handleImageRemove}
+        />
+        <Input
+          className='title-input'
+          placeholder='添加标题'
+          value={title}
+          onInput={(e) => setTitle(e.detail.value)}
         />
         <Textarea
           className='content-input'
