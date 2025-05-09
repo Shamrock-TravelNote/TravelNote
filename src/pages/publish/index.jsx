@@ -26,7 +26,7 @@ const Publish = () => {
 
   // 处理图片选择
   const handleMediaChange = (newFiles) => {
-    console.log('选择的文件:', newFiles)
+    // console.log('选择的文件:', newFiles)
     setFiles(newFiles)
   }
 
@@ -88,7 +88,10 @@ const Publish = () => {
 
       Taro.showToast({ title: '发布成功', icon: 'success' })
       setFiles([])
+      setTitle('')
       setContent('')
+      // TODO: 发布成功后跳转到详情页
+      // Taro.navigateTo({ url: '/pages/travel/index' })
     } catch (error) {
       console.error('发布失败:', error)
       Taro.showToast({ title: '发布失败', icon: 'none' })

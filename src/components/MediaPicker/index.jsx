@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { View, Image, Video, Button, CoverView, CoverImage } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import './index.scss';
-import { all } from 'axios';
+// import { all } from 'axios';
 
 const MediaPicker = ({ value = [], maxCount = 9, onChange }) => {
-  const [files, setFiles] = useState(value);
+  // const [files, setFiles] = useState(value);
 
   const triggerChange = list => {
-    setFiles(list);
+    // setFiles(list);
     onChange && onChange(list);
-    console.log('触发onChange:', list);
+    // console.log('触发onChange:', list);
   };
 
   // 映射文件属性
@@ -57,7 +57,7 @@ const MediaPicker = ({ value = [], maxCount = 9, onChange }) => {
 
   // 处理添加文件
   const handleAdd = async () => {
-    const remain = maxCount - files.length;
+    const remain = maxCount - value.length;
     if (remain <= 0) {
       Taro.showToast({
         title: `最多选择${maxCount}个文件`,
@@ -86,14 +86,14 @@ const MediaPicker = ({ value = [], maxCount = 9, onChange }) => {
       err = validateChosenType(chosen);
       if (err) throw new Error(err);
 
-      err = validateAgainstExisting(files, chosen[0]?.type);
+      err = validateAgainstExisting(value, chosen[0]?.type);
       if (err) throw new Error(err);
 
-      err = validateVideoCount(files, chosen);
+      err = validateVideoCount(value, chosen);
       if (err) throw new Error(err);
 
       // 3. 全部通过，更新列表
-      triggerChange([...files, ...chosen]);
+      triggerChange([...value, ...chosen]);
     } catch (e) {
       console.error('选择文件失败:', e);
       Taro.showToast({
@@ -109,7 +109,7 @@ const MediaPicker = ({ value = [], maxCount = 9, onChange }) => {
       console.log('Previewing image:', file.url);
       Taro.previewImage({
         current: file.url,
-        urls: files.filter(f => f.type === 'image').map(f => f.url),
+        urls: value.filter(f => f.type === 'image').map(f => f.url),
       });
     } else {
       console.log('Previewing video:', file.url);
@@ -119,13 +119,13 @@ const MediaPicker = ({ value = [], maxCount = 9, onChange }) => {
   };
 
   const handleDelete = index => {
-    const newList = files.filter((_, i) => i !== index);
+    const newList = value.filter((_, i) => i !== index);
     triggerChange(newList);
   };
 
   return (
     <View className="media-picker">
-      {files.map((file, idx) => (
+      {value.map((file, idx) => (
         <View
           key={idx}
           className={
@@ -163,8 +163,8 @@ const MediaPicker = ({ value = [], maxCount = 9, onChange }) => {
         </View>
       ))}
       {(
-        (files.length === 0) ||
-        (files[0]?.type === 'image' && files.length < 9)
+        (value.length === 0) ||
+        (value[0]?.type === 'image' && value.length < 9)
       ) && (
         <View className="media-item add-btn" onClick={handleAdd}>
           <CoverView className="plus">+</CoverView>
