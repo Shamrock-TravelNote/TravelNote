@@ -25,7 +25,7 @@ const Auth = () => {
     try {
       const authApi = isLogin ? auth.login : auth.register
       const res = await authApi(formData)
-      console.log('登录/注册API响应:', res)
+      // console.log('登录/注册API响应:', res)
 
       if (res && res.token) {
         console.log('登录/注册成功:', res)
@@ -66,7 +66,7 @@ const Auth = () => {
     Taro.showLoading({ title: '登录中...' })
     try {
       const res = await Taro.login()
-      console.log('微信登录返回的code:', res)
+      // console.log('微信登录返回的code:', res)
       if (res.code) {
         // 添加请求前日志
         console.log('准备发送微信登录请求')

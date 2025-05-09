@@ -21,7 +21,7 @@ export const useUserStore = create(
     (set) => ({
       token: null,
       setToken: (token) => set({ token }),
-      userInfo: null, // {userId, username, avatar, role}
+      userInfo: null, // {id, nickname, avatar, role} // 确保这里存储的userInfo中包含id字段
       setUserInfo: (userInfo) => set({ userInfo }),
       logout: () => {
         set({ token: null, userInfo: null });

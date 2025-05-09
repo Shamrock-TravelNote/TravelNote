@@ -1,11 +1,12 @@
-import request from "../request";
+import request from "../taroRequest";
+import { BASE_URL } from "../config";
 import Taro from "@tarojs/taro";
 
 // 将小程序的文件上传转换为 Promise
 const uploadFile = (tempFilePath) => {
   return new Promise((resolve, reject) => {
     Taro.uploadFile({
-      url: `${request.defaults.baseURL}/api/upload/image`,
+      url: `${BASE_URL}/api/upload/image`,
       filePath: tempFilePath,
       name: "file",
       success: (res) => {

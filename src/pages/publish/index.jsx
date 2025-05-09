@@ -20,7 +20,6 @@ const Publish = () => {
   const [uploading, setUploading] = useState(false)
 
   useDidShow(() => {
-    console.log('Publish 页面显示')
     checkUserLoggedIn()
     setActiveTabIndex(1)
   })
@@ -55,6 +54,11 @@ const Publish = () => {
 
   // 发布游记
   const handlePublish = async () => {
+    if (!userInfo || !userInfo.id) {
+      Taro.showToast({ title: '请先登录', icon: 'none' })
+      return
+    }
+
     if (!content.trim()) {
       Taro.showToast({ title: '请输入游记内容', icon: 'none' })
       return
@@ -67,17 +71,20 @@ const Publish = () => {
 
     try {
       setUploading(true)
-      console.log('files:', files)
-      // const uploadedFiles = await Promise.all(
-      //   files.map(file => uploadImage(file.url))
-      // )
+      console.log('发布文件:', files)
+      const uploadedFiles = await Promise.all(
+        files.map(file => uploadImage(file.url))
+      )
 
       // 这里可以调用创建游记的 API
-      // await travel.createTravel({
-      //   title,
-      //   content,
-      //   images: uploadedFiles
-      // })
+      await travel.createTravel({
+        title,
+        content,
+        images: uploadedFiles,
+        mediaType: files[0].type,
+        detailType: files[0].orientation,
+        // 不需要手动传userId，后端会从token中获取
+      })
 
       Taro.showToast({ title: '发布成功', icon: 'success' })
       setFiles([])

@@ -2,6 +2,7 @@ import axios from "axios";
 import Taro from "@tarojs/taro";
 import { API_CONFIG } from "./config";
 import { TaroAdapter } from "axios-taro-adapter";
+import { useUserStore } from "../store";
 
 const instance = axios.create({ ...API_CONFIG, adapter: TaroAdapter });
 
@@ -11,24 +12,42 @@ const instance = axios.create({ ...API_CONFIG, adapter: TaroAdapter });
 instance.interceptors.request.use(
   (config) => {
     // 添加更详细的请求日志
-    console.log("完整请求配置:", {
-      url: config.url,
-      baseURL: config.baseURL,
-      method: config.method,
-      headers: config.headers,
-      data: config.data,
-      fullPath: `${config.baseURL || ""}${config.url}`,
-    });
+    // console.log("完整请求配置:", {
+    //   url: config.url,
+    //   baseURL: config.baseURL,
+    //   method: config.method,
+    //   headers: config.headers,
+    //   data: config.data,
+    //   fullPath: `${config.baseURL || ""}${config.url}`,
+    // });
 
     // 验证baseURL
     if (!config.baseURL) {
       console.warn("Warning: baseURL is not set in API_CONFIG");
     }
 
-    // 从本地获取token
-    const token = Taro.getStorageSync("token");
+    let token = null;
+
+    try {
+      const persistedUserState = Taro.getStorageSync("user-storage");
+      if (persistedUserState) {
+        const userState = JSON.parse(persistedUserState);
+        if (userState && userState.state && userState.state.token) {
+          token = userState.state.token;
+        }
+      }
+    } catch (e) {
+      console.error(
+        "Error retrieving token from storage for request interceptor:",
+        e
+      );
+    }
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log("Token attached to request:", token);
+    } else {
+      console.log("No token found for request.");
     }
 
     // 确保请求头包含正确的 Content-Type
@@ -36,6 +55,8 @@ instance.interceptors.request.use(
       config.headers["Content-Type"] = "application/json";
     }
 
+    console.log("headers:", config.headers);
+    console.log("headers(JSON)", JSON.stringify(config.headers));
     return config;
   },
   (error) => {

@@ -9,7 +9,6 @@ const TravelCard = ({ data }) => {
   const [isLiked, setIsLiked] = useState(false)
   const [likes, setLikes] = useState(0)
   const [imageType, setImageType] = useState('horizontal')
-  console.log('TravelCard data:', data)
 
   useEffect(() => {
     setLikes(data.likes)
@@ -62,7 +61,7 @@ const TravelCard = ({ data }) => {
     <View
       className={`travel-card ${imageType}`}
       onClick={handleCardClick}
-      style={{ gridRowEnd: `span ${data.rowSpan}` }}
+      // style={{ gridRowEnd: `span ${data.rowSpan}` }}
     >
       <Image 
         className='card-image' 

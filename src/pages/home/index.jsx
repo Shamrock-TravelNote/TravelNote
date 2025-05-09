@@ -1,13 +1,19 @@
-import { View } from '@tarojs/components'
+import { View, ScrollView, GridView } from '@tarojs/components'
 import { useEffect, useMemo, useState } from 'react'
 import SearchBar from '@/components/SearchBar'
 import TravelCard from '@/components/TravelCard'
 import travel from '@/services/api/travel'
 import Taro, { useDidShow, useReachBottom, usePullDownRefresh } from '@tarojs/taro'
 import { useUserStore } from '@/store'
+// import React from 'react'
 import './index.scss'
 
 const PAGE_LIMIT = 10
+
+// const WaterfallItem = React.memo(({ id, index, data }) => {
+//   const note = data[index]
+//   return <TravelCard key={note.id} data={note} />
+// })
 
 const Home = () => {
   const setActiveTabIndex = useUserStore(state => state.setActiveTabIndex)
@@ -16,11 +22,18 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
 
-  const gridAutoRows = 5; // As defined in your CSS! IMPORTANT
-  const verticalCardHeight = 550; // As defined in your CSS!
-  const horizontalCardHeight = 390; // As defined in your CSS!
+  // const gridAutoRows = 5; // As defined in your CSS! IMPORTANT
+  // const verticalCardHeight = 550; // As defined in your CSS!
+  // const horizontalCardHeight = 390; // As defined in your CSS!
 
-  
+  // 计算单项高度逻辑，与原 Grid 计算保持一致
+  const getItemSize = index => {
+    const note = travelNotes[index]
+    return note.mediaType === 'video'
+      ? (note.detailType === 'vertical' ? 540 : 380)
+      : (note.detailType === 'vertical' ? 520 : 360)
+  }
+
   useDidShow(() => {
     setActiveTabIndex(0)
   })
@@ -52,7 +65,7 @@ const Home = () => {
       const newTravelNotes = response.data || []
       const totalNotes = response.total || 0
 
-      console.log(`获取第 ${pageToFetch} 页游记列表`, newTravelNotes)
+      // console.log(`获取第 ${pageToFetch} 页游记列表`, newTravelNotes)
 
       setTravelNotes(prevNotes => {
         return isRefresh ? newTravelNotes : [...prevNotes, ...newTravelNotes]
@@ -89,6 +102,11 @@ const Home = () => {
     Taro.stopPullDownRefresh()
   })
 
+  // // 虚拟瀑布流触底加载
+  // const handleScrollToLower = () => {
+  //   if (hasMore && !loading) fetchTravelNotes(currentPage + 1)
+  // }
+
   // const handleSetGridRowEnd = useCallback((index) => {
   //       if (!cardRefs.current) return;
   //       const cardRef = cardRefs.current[index];
@@ -102,9 +120,41 @@ const Home = () => {
     <View className='home'>
       <SearchBar />
       <View className='content'>
-        <View className='travel-list'>
+        <ScrollView
+          className='scroll-view'
+          scrollY
+          scrollWithAnimation
+          enableBackToTop
+          // onScrollToLower={handleScrollToLower}
+          onScroll={e => {
+            // console.log('Scroll event:', e)
+          }}
+        >
+          <GridView
+            type='masonry'
+            crossAxisCount={2}
+            mainAxisGap={10}
+            crossAxisGap={10}
+            style={{ height: '100vh' }}
+            // onScrollToLower={handleScrollToLower}
+            // onScroll={e => {
+            //   console.log('Scroll event:', e)
+            // }}
+            onItemSize={getItemSize}
+          >
+            {travelNotes.map(note => {
+              return (
+                <TravelCard
+                  key={note.id}
+                  data={{...note}}
+                />
+              )
+            })}
+          </GridView>
+        </ScrollView>
+        {/* <View className='travel-list'>
           {travelNotes.map(note => {
-            let cardHeight = note.mediaType === 'video' ? (note.detailType === 'vertical' ? 550 : 390) : (note.detailType === 'vertical' ? 550 : 390);
+            let cardHeight = note.mediaType === 'video' ? (note.detailType === 'vertical' ? 540 : 380) : (note.detailType === 'vertical' ? 520 : 360);
             const rowSpan = Math.ceil(cardHeight / gridAutoRows);
             console.log(`note.imageType: ${note.detailType}, cardHeight: ${cardHeight}, rowSpan: ${rowSpan}`); 
               return (
@@ -121,7 +171,7 @@ const Home = () => {
           {!loading && travelNotes.length === 0 && (
             <View className='no-data'>暂无游记数据</View>
           )}
-        </View>
+        </View> */}
       </View>
     </View>
   )
