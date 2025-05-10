@@ -53,7 +53,8 @@ const TravelCard = ({ data }) => {
 
   const handleCardClick = () => {
     Taro.navigateTo({
-      url: `/pages/travel-detail/index?id=${data.id}`
+      url: `/packageFeature/pages/detail/index?id=${data.id}
+`
     })
   }
 

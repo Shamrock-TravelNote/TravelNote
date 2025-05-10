@@ -1,5 +1,6 @@
 import Taro from "@tarojs/taro";
 import { BASE_URL } from "./config"; // 假设你的 BASE_URL 在这里
+import upload from "./api/upload";
 
 // 拦截器对象
 const customInterceptor = function (chain) {
@@ -163,10 +164,20 @@ const request = {
   },
   // 你还可以添加 patch, head 等方法如果需要
   // 通用请求方法，如果不想区分 get/post 等
-  send: (options) => {
-    return Taro.request({
-      ...options,
-      url: BASE_URL + options.url,
+  upload: (url, data) => {
+    return Taro.uploadFile({
+      url: BASE_URL + url + data.type,
+      filePath: data.url,
+      name: "file",
+      success: (res) => {
+        console.log("上传成功", res);
+        const data = JSON.parse(res.data);
+        resolve(data.url);
+      },
+      fail: (err) => {
+        console.error("上传失败", err);
+        reject(err);
+      },
     });
   },
 };
