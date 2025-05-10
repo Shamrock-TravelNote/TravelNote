@@ -1,10 +1,12 @@
-import { View, Text, Input, Button } from '@tarojs/components'
+import { View, Text, Input, Button, Image } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import Taro from '@tarojs/taro'
 import { checkUserLoggedIn, useUserStore } from '../../store/userStore'
 import { auth } from '../../services'
+import logoImage from '@/assets/Logo.jpeg'
 import './index.scss'
 
+// TODO: 验证失败时Input样式同步改变
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
@@ -13,6 +15,8 @@ const Auth = () => {
   })
   const [loading, setLoading] = useState(false)
   const { setToken, setUserInfo } = useUserStore()
+  const [isUserFocused, setIsUserFocused] = useState(false);
+  const [isPassFocused, setIsPassFocused] = useState(false);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -20,6 +24,14 @@ const Auth = () => {
 
   // 用户自行登录/注册
   const handleSubmit = async () => {
+    if (!formData.username || !formData.password) {
+      Taro.showToast({
+        title: '用户名和密码不能为空',
+        icon: 'none'
+      })
+      return
+    }
+
     setLoading(true)
     Taro.showLoading({ title: isLogin ? '登录中...' : '注册中...' })
     try {
@@ -142,30 +154,37 @@ const Auth = () => {
 
   return (
     <View className='auth'>
+      <Image className='logo' src={logoImage} mode='aspectFit' />
+      <Text className='page-title'>{isLogin ? '欢迎回来！' : '加入我们'}</Text>
+      <View className='form-card'>
       <Text className='title'>{isLogin ? '登录' : '注册'}</Text>
-      <View className='form'>
+      
         <Input
-          className='input'
+          className={`input ${isUserFocused ? 'focused' : ''}`}
           placeholder='用户名'
+          focus
           value={formData.username}
+          onFocus={() => {
+            console.log('fo')
+            setIsUserFocused(true)
+          }}
+          onBlur={() => setIsUserFocused(false)}
           onInput={e => handleInputChange('username', e.detail.value)}
         />
         <Input
-          className='input'
+          className={`input ${isPassFocused ? 'focused' : ''}`}
           type='password'
+          password
           placeholder='密码'
+          focus
+          onFocus={() => setIsPassFocused(true)}
+          onBlur={() => setIsPassFocused(false)}
           value={formData.password}
           onInput={e => handleInputChange('password', e.detail.value)}
         />
         <Button className='submit-btn' onClick={handleSubmit}>
           {isLogin ? '登录' : '注册'}
         </Button>
-        <Text 
-          className='switch-mode'
-          onClick={() => setIsLogin(!isLogin)}
-        >
-          {isLogin ? '没有账号？立即注册' : '已有账号？立即登录'}
-        </Text>
         {Taro.getEnv() === Taro.ENV_TYPE.WEAPP && (
           <View className='wx-login-section'>
             <Button className='wechat-login-btn' onClick={handleWechatLogin} loading={loading}>
@@ -173,6 +192,13 @@ const Auth = () => {
             </Button>
           </View>
         ) }
+        <Text
+          className='switch-mode'
+          onClick={() => setIsLogin(!isLogin)}
+        >
+          {isLogin ? '没有账号？立即注册' : '已有账号？立即登录'}
+        </Text>
+      
       </View>
     </View>
   )
