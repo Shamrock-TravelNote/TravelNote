@@ -10,11 +10,10 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  // display: flex;
-  // flex-direction: column;
+  flex-direction: column;
   // height: auto;
-  display: inline-block;
-  break-inside: avoid;
+  display: flex;
+  // break-inside: avoid;
 
   &.vertical {
     height: 550px;
@@ -30,10 +29,43 @@
     }
   }
 
-  .card-image {
+  .card-image-container {
     width: 100%;
-    object-fit: cover;
+    position: relative;
+    min-height: 150px;
+
+    .card-image {
+      display: block;
+      width: 100%;
+      // height: 100%;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+
+    .play-icon-container {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .at-icon {
+        position: relative;
+        left: 5px;
+        display: block; // 有助于某些情况下的对齐
+      }
+    }
   }
+
+  // .card-image {
+  //   width: 100%;
+  //   object-fit: cover;
+  // }
 
   .card-content {
     padding: 16px;
@@ -41,6 +73,7 @@
     flex: 1; // 移除flex: 1，使用固定高度
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
     height: auto;
 
     .title {

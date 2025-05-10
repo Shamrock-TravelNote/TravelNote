@@ -1,34 +1,26 @@
-.home {
+.waterfall-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
 
-  .content {
-    flex: 1;
-    overflow: hidden;
-    padding: 10px;
-    box-sizing: border-box;
-
-    .scroll-view {
-      height: 100%;
-    }
-    
-    .travel-list {
-      // display: block;
-      // columns: 2;
-      // column-gap: 20px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(100px, 1fr));
-      grid-gap: 1px;
-      grid-auto-rows: 5px;
-      // gap: 20px;
-      background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      box-sizing: border-box;
-      width: 100%;
-      justify-items: center;
-    }
+  .scroll-view {
+    height: 100%;
   }
 
+  .travel-list {
+    // display: block;
+    // columns: 2;
+    // column-gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+    grid-gap: 1px;
+    grid-auto-rows: 5px;
+    // gap: 20px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+    width: 100%;
+    justify-items: center;
+  }
 }

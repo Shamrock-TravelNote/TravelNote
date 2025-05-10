@@ -1,13 +1,23 @@
-import { View, Text, Image, Swiper, SwiperItem } from "@tarojs/components";
-import Tarp, { useDidShow, useRouter } from "@tarojs/taro";
+import {
+  View,
+  Text,
+  Image,
+  Swiper,
+  SwiperItem,
+  Video,
+} from "@tarojs/components";
+import Taro, { useDidShow, useRouter } from "@tarojs/taro";
 import { useState, useEffect } from "react";
 import { useUserStore, checkUserLoggedIn } from "@/store";
 import { travel } from "@/services";
 import { AtActivityIndicator, AtIcon } from "taro-ui";
 import "./index.scss";
 
-// TODO: API获取数据
-// TODO: 评论区（待定）
+// DONE: API获取数据
+// TODO: 评论区（待定）【考虑新增数据库schema】
+// DONE：支持视频播放（最好是内嵌式）
+// DONE：待定、拒绝类型下方显示状态或者拒绝理由
+// TODO: 分享功能、分享H5页面
 const TravelDetail = () => {
   const [travelDetail, setTravelDetail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,16 +29,15 @@ const TravelDetail = () => {
   const id = router.params.id;
   const userInfo = useUserStore((state) => state.userInfo);
 
-  useDidShow(() => {
-    checkUserLoggedIn();
+  useEffect(() => {
+    // 使用 useEffect 来替代 useDidShow 进行初次加载和ID变化时的加载
     if (id) {
       fetchTravelDetail();
-      checkInitialLikeStatus();
     } else {
       setError("游记ID不存在");
       setLoading(false);
     }
-  });
+  }, [id]); // 当 id 变化时重新执行
 
   const fetchTravelDetail = async () => {
     if (!id) return;
@@ -40,6 +49,7 @@ const TravelDetail = () => {
       console.log("detailData:", response);
       if (response) {
         setTravelDetail(response);
+        checkInitialLikeStatus(response.id, response.likes);
       } else {
         setError("未找到游记详细");
       }
@@ -51,14 +61,34 @@ const TravelDetail = () => {
     }
   };
 
-  const checkInitialLikeStatus = async () => {
+  const checkInitialLikeStatus = async (id, initialLikes = 0) => {
     if (!id) return;
+    setLikeCount(initialLikes);
     try {
       const response = await travel.checkLikeStatus(id);
       setIsLiked(response.isLiked);
       setLikeCount(response.likes);
     } catch (error) {
       console.error("获取初始点赞状态失败:", err);
+    }
+  };
+
+  const handleImagePreview = (currentUrl) => {
+    if (travelDetail && travelDetail.images && travelDetail.images.length > 0) {
+      Taro.previewImage({
+        current: currentUrl, // 当前显示图片的http链接
+        urls: travelDetail.images, // 需要预览的图片http链接列表
+        success: () => {
+          console.log("图片预览成功");
+        },
+        fail: (err) => {
+          console.error("图片预览失败:", err);
+          Taro.showToast({
+            title: "图片预览失败",
+            icon: "none",
+          });
+        },
+      });
     }
   };
 
@@ -112,12 +142,29 @@ const TravelDetail = () => {
     );
   }
 
-  const { title, author, createdAt, images, content } = travelDetail;
+  const {
+    title,
+    author,
+    createdAt,
+    images,
+    video,
+    cover,
+    mediaType,
+    detailType,
+    content,
+    authorId,
+    status,
+    rejectionReason,
+  } = travelDetail;
+
+  const isAuthor = userInfo && authorId && userInfo.id === authorId;
+
+  console.log("isAu", isAuthor);
+  console.log("sta", status);
 
   return (
     <View className="travel-detail">
       <View className="detail-header">
-        <Text className="title">{title || "游记标题加载中..."}</Text>
         <View className="author-info-bar">
           {author?.avatar && (
             <Image
@@ -138,29 +185,78 @@ const TravelDetail = () => {
           </View>
         </View>
       </View>
-      {images && images.length > 0 && (
-        <Swiper
-          className="cover-swiper"
-          indicatorDots
-          indicatorColor="rgba(255, 255, 255, .5)"
-          indicatorActiveColor="#ffffff"
-          autoplay
-          circular
-          previousMargin="0px" // 确保全宽
-          nextMargin="0px" // 确保全宽
-        >
-          {images.map((image, index) => (
-            <SwiperItem key={index} className="swiper-item-full">
-              <Image className="swiper-image" src={image} mode="aspectFill" />
-            </SwiperItem>
-          ))}
-        </Swiper>
-      )}
+      <View className={`media-content-area ${detailType || "horizontal"}`}>
+        {mediaType === "image" && images && images.length > 0 && (
+          <Swiper
+            className={`cover-swiper ${detailType || "vertical"}`}
+            indicatorDots
+            indicatorColor="rgba(255, 255, 255, .5)"
+            indicatorActiveColor="#ffffff"
+            autoplay={false}
+            circular
+            previousMargin="0px" // 确保全宽
+            nextMargin="0px" // 确保全宽
+          >
+            {images.map((image, index) => (
+              <SwiperItem
+                key={index}
+                className="swiper-item-full"
+                onClick={() => handleImagePreview(image)}
+              >
+                <Image className="swiper-image" src={image} mode="aspectFit" />
+              </SwiperItem>
+            ))}
+          </Swiper>
+        )}
+        {mediaType === "video" && video && (
+          <Video
+            className={`detail-video-player ${detailType || "horizontal"}`}
+            src={video}
+            controls
+            autoplay={false} // 是否自动播放，建议false
+            poster={cover || ""}
+            loop={false}
+            muted={false}
+            // initialTime={0} // 指定视频初始播放位置
+            // objectFit="contain" // 'contain' (默认) 或 'fill' 或 'cover'
+            onError={(e) => console.error("Video Error:", e.detail.errMsg)}
+          />
+        )}
+      </View>
       <View className="detail-content">
-        <Text className="content-text" selectable>
+        <Text className="title">{title || "游记标题加载中..."}</Text>
+        <Text className="content-text" user-select>
           {content || "游记内容加载中..."}
         </Text>
       </View>
+      {isAuthor && status && status !== "approved" && (
+        <View
+          className={`status-notice-area ${
+            status === "pending" ? "status-pending" : "status-rejected"
+          }`}
+        >
+          {status === "pending" && (
+            <Text className="status-text">状态：您的笔记正在等待审核中...</Text>
+          )}
+          {status === "rejected" && (
+            <View>
+              <Text className="status-text status-text-title">
+                状态：笔记审核未通过
+              </Text>
+              {rejectionReason && (
+                <Text className="status-text rejection-reason">
+                  原因：{rejectionReason}
+                </Text>
+              )}
+              {!rejectionReason && (
+                <Text className="status-text rejection-reason">
+                  原因：暂无具体原因，请联系管理员。
+                </Text>
+              )}
+            </View>
+          )}
+        </View>
+      )}
       <View className="detail-footer">
         <View className="action-bar">
           <View className="action-item" onClick={handleLike}>
@@ -186,7 +282,7 @@ const TravelDetail = () => {
             <AtIcon value="share" size="20" color="#666" />
             <Text className="action-text">分享</Text>
           </View>
-          {userInfo && travelDetail.authorId === userInfo.id && (
+          {userInfo && authorId === userInfo.id && (
             <>
               <View
                 className="action-item"
