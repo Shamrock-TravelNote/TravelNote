@@ -1,6 +1,5 @@
 import { View } from "@tarojs/components";
 import { useEffect, useState } from "react";
-import CustomNavBar from "@/components/CustomNavBar";
 import SearchBar from "@/components/SearchBar";
 // import TravelCard from '@/components/TravelCard'
 import WaterFall from "../../components/WaterFall";
@@ -178,16 +177,16 @@ const Home = () => {
   //       cardRef.style.gridRowEnd = `span ${Math.ceil(height)}`;
   //   }, []);
 
-  const pageContentStyle = {
-    paddingTop: `${navBarInfo.navBarHeight}px`, // 使用获取到的导航栏高度
-    height: `calc(100vh - ${navBarInfo.navBarHeight}px)`, // 确保内容区域占满剩余高度
-    overflowY: "auto", // 如果内容超出一屏，允许滚动
-  };
+  // const pageContentStyle = {
+  //   paddingTop: `${navBarInfo.navBarHeight}px`, // 使用获取到的导航栏高度
+  //   height: `calc(100vh - ${navBarInfo.navBarHeight}px)`, // 确保内容区域占满剩余高度
+  //   overflowY: "auto", // 如果内容超出一屏，允许滚动
+  // };
 
   return (
     <View className="home">
-      <CustomNavBar title="首页" showBackButton={false} />
-      <View className="page-content-wrapper" style={pageContentStyle}>
+      {/* <CustomNavBar title="首页" showBackButton={false} /> */}
+      <View className="page-content-wrapper">
         <View className="header">
           <SearchBar />
         </View>

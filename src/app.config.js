@@ -1,8 +1,9 @@
 export default defineAppConfig({
   pages: [
     // "pages/index/index",
-    "pages/login/index",
     "pages/home/index",
+    "pages/login/index",
+
     "pages/publish/index",
     "pages/profile/index",
   ],
@@ -17,22 +18,22 @@ export default defineAppConfig({
   usingComponents: {},
   window: {
     backgroundTextStyle: "light",
-    navigationStyle: "custom",
+    // navigationStyle: "custom",
     navigationBarBackgroundColor: "#fff",
     navigationBarTitleText: "旅行笔记",
     navigationBarTextStyle: "black",
   },
-  renderer: "skyline", // 全局启用 Skyline
-  rendererOptions: {
-    skyline: {
-      defaultDisplayBlock: true,
-      disableABTest: false,
-      sdkVersionBegin: "2.28.0",
-      sdkVersionEnd: "999.999.999",
-    },
-  },
-  componentFramework: "glass-easel", // Skyline 依赖于 glass-easel
-  lazyCodeLoading: "requiredComponents",
+  // renderer: "skyline", // 全局启用 Skyline
+  // rendererOptions: {
+  //   skyline: {
+  //     defaultDisplayBlock: true,
+  //     disableABTest: false,
+  //     sdkVersionBegin: "2.28.0",
+  //     sdkVersionEnd: "999.999.999",
+  //   },
+  // },
+  // componentFramework: "glass-easel", // Skyline 依赖于 glass-easel
+  // lazyCodeLoading: "requiredComponents",
   tabBar: {
     color: "#666666", // 未选中文字颜色
     selectedColor: "#c1ea2b", // 选中文字颜色

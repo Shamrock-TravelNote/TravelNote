@@ -1,6 +1,6 @@
 import { View, ScrollView, GridView } from "@tarojs/components";
 import { AtLoadMore } from "taro-ui";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import TravelCard from "@/components/TravelCard";
 import travel from "@/services/api/travel";
 import Taro, { usePullDownRefresh } from "@tarojs/taro";
@@ -8,7 +8,7 @@ import Taro, { usePullDownRefresh } from "@tarojs/taro";
 import "./index.scss";
 
 const PAGE_LIMIT = 10;
-const SCROLL_THRESHOLD = 400;
+const SCROLL_THRESHOLD = 650;
 
 // TODO：支持用户下拉界面更新整体数据
 // DONE：支持三种状态的笔记
@@ -19,7 +19,7 @@ const WaterFall = ({
 }) => {
   const scrollViewRef = useRef(null);
   const isLoadingMore = useRef(false);
-  const [scrollViewHeight, setScrollViewHeight] = useState("100vh");
+  const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
   const [travelNotes, setTravelNotes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,82 +53,77 @@ const WaterFall = ({
         })
         .exec();
     });
-  }, []);
+  }, [fetchTravelNotes]);
 
-  const fetchTravelNotes = async (pageToFetch, isRefresh = false) => {
-    if (
-      (isLoadingMore.current && pageToFetch !== 1) ||
-      (!isRefresh && !hasMore)
-    ) {
-      return;
-    }
-
-    isLoadingMore.current = true;
-    setLoading(true);
-
-    try {
-      let response;
-      const params = {
-        page: pageToFetch,
-        limit: PAGE_LIMIT,
-        keyword: keyword || undefined,
-      };
-
-      // 获取游记列表
-      if (!isProfile) {
-        response = await travel.getTravelList(params);
-        // console.log(response);
-      } else {
-        params.status = statusFilter;
-        response = await travel.getMyTravelList(params);
+  const fetchTravelNotes = useCallback(
+    async (pageToFetch, isRefresh = false) => {
+      if (
+        (isLoadingMore.current && pageToFetch !== 1) ||
+        (!isRefresh && !hasMore)
+      ) {
+        return;
       }
 
-      const newTravelNotes = response.data || [];
-      const totalNotes = response.total || 0;
+      console.log("fetch data...");
 
-      // console.log(`获取第 ${pageToFetch} 页游记列表`, newTravelNotes)
+      isLoadingMore.current = true;
+      setLoading(true);
 
-      setTravelNotes((prevNotes) => {
-        return isRefresh ? newTravelNotes : [...prevNotes, ...newTravelNotes];
-      });
+      try {
+        let response;
+        const params = {
+          page: pageToFetch,
+          limit: PAGE_LIMIT,
+          keyword: keyword || undefined,
+        };
 
-      // 更新是否有更多数据
-      const currentTotalLength = isRefresh
-        ? newTravelNotes.length
-        : travelNotes.length + newTravelNotes.length;
-      setHasMore(currentTotalLength < totalNotes);
+        console.log("params", params);
 
-      // 如果是刷新操作，重置当前页码
-      if (newTravelNotes.length > 0 || isRefresh) {
-        setCurrentPage(isRefresh ? 1 : pageToFetch);
+        // 获取游记列表
+        if (!isProfile) {
+          response = await travel.getTravelList(params);
+          // console.log(response);
+        } else {
+          params.status = statusFilter;
+          response = await travel.getMyTravelList(params);
+        }
+
+        const newTravelNotes = response.data || [];
+        const totalNotes = response.total || 0;
+
+        console.log(`获取第 ${pageToFetch} 页游记列表`, newTravelNotes);
+
+        setTravelNotes((prevNotes) => {
+          return isRefresh ? newTravelNotes : [...prevNotes, ...newTravelNotes];
+        });
+
+        // 更新是否有更多数据
+        const currentTotalLength = isRefresh
+          ? newTravelNotes.length
+          : travelNotes.length + newTravelNotes.length;
+        setHasMore(currentTotalLength < totalNotes);
+
+        // 如果是刷新操作，重置当前页码
+        if (newTravelNotes.length > 0 || isRefresh) {
+          setCurrentPage(isRefresh ? 1 : pageToFetch);
+        }
+      } catch (error) {
+        console.error(`获取游记列表第 ${pageToFetch} 页失败`, error);
+        setHasMore(false);
+      } finally {
+        // TODO: 防止切换页面时产生界面闪烁，设置合适的Loading界面
+        setLoading(false);
+        isLoadingMore.current = false;
       }
-    } catch (error) {
-      console.error(`获取游记列表第 ${pageToFetch} 页失败`, error);
-      setHasMore(false);
-    } finally {
-      // TODO: 防止切换页面时产生界面闪烁，设置合适的Loading界面
-      setLoading(false);
-      if (!isRefresh) {
-        setTimeout(() => {
-          isLoadingMore.current = false;
-          console.log(
-            "[WaterFall] isLoadingMore reset to false (after timeout)."
-          );
-        }, 100); // 这个延迟可以调整
-      }
-      console.log(
-        `[WaterFall] fetchTravelNotes finished. Loading: ${false}, isLoadingMore (if not refresh): ${
-          isLoadingMore.current
-        }`
-      );
-    }
-  };
+    },
+    [keyword, isProfile, statusFilter, hasMore, travelNotes.length]
+  );
 
   const handleScroll = (event) => {
     if (!hasMore || isLoadingMore.current || !scrollViewHeight) return;
 
     const { scrollTop, scrollHeight } = event.detail;
-    console.log(scrollTop, scrollHeight, scrollViewHeight);
+    // console.log(scrollTop, scrollHeight, scrollViewHeight);
 
     if (scrollTop + scrollViewHeight >= scrollHeight - SCROLL_THRESHOLD) {
       console.log("滚动接近底部，提前加载更多");
