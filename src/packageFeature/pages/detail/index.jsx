@@ -18,6 +18,7 @@ import "./index.scss";
 // DONE：支持视频播放（最好是内嵌式）
 // DONE：待定、拒绝类型下方显示状态或者拒绝理由
 // TODO: 分享功能、分享H5页面
+// TODO: 支持笔记编辑、删除功能
 const TravelDetail = () => {
   const [travelDetail, setTravelDetail] = useState(null);
   const [loading, setLoading] = useState(true);
