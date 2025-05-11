@@ -5,7 +5,7 @@ import Taro from "@tarojs/taro";
 import travel from "@/services/api/travel";
 import "./index.scss";
 
-// TODO: 视频类型右上角添加播放icon
+// DONE: 视频类型右上角添加播放icon
 const TravelCard = ({ data }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
