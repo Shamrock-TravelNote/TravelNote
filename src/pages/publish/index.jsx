@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { useDidShow } from "@tarojs/taro";
 import { AtImagePicker, AtButton } from "taro-ui";
 import Taro from "@tarojs/taro";
-import { useUserStore, checkUserLoggedIn } from "@/store";
+import { useUserStore, checkUserLoggedIn, useUIStore } from "@/store";
 import MediaPicker from "@/components/MediaPicker";
 import { upload, travel } from "@/services";
 import "./index.scss";
@@ -17,6 +17,9 @@ const Publish = () => {
     useCallback((state) => state.setActiveTabIndex, [])
   );
   const userInfo = useUserStore(useCallback((state) => state.userInfo, []));
+  const triggerProfileRefresh = useUIStore(
+    (state) => state.triggerProfileRefresh
+  );
 
   const [files, setFiles] = useState([]);
   const [content, setContent] = useState("");
@@ -104,9 +107,13 @@ const Publish = () => {
       await travel.createTravel(params);
 
       Taro.showToast({ title: "发布成功", icon: "success" });
+
       setFiles([]);
       setTitle("");
       setContent("");
+
+      triggerProfileRefresh();
+
       Taro.switchTab({ url: "/pages/profile/index" });
     } catch (error) {
       console.error("发布失败:", error);
