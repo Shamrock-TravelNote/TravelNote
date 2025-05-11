@@ -59,11 +59,23 @@ const TravelCard = ({ data }) => {
     });
   };
 
+  // 构建卡片的动态类名
+  let cardClassName = "travel-card";
+  if (data.detailType === "vertical") {
+    cardClassName += " vertical-card-style";
+  } else {
+    cardClassName += " horizontal-card-style";
+  }
+
+  // 根据 status 添加额外的类名
+  if (data.status === "pending") {
+    cardClassName += " status-pending";
+  } else if (data.status === "rejected") {
+    cardClassName += " status-rejected";
+  }
+
   return (
-    <View
-      className={`travel-card ${data.detailType}`}
-      onClick={handleCardClick}
-    >
+    <View className={cardClassName} onClick={handleCardClick}>
       <View className="card-image-container">
         <Image
           className="card-image"
@@ -74,6 +86,17 @@ const TravelCard = ({ data }) => {
         {data.mediaType === "video" && (
           <View className="play-icon-container">
             <AtIcon value="play" size="20" color="#fff" />
+          </View>
+        )}
+        {data.status && data.status !== "approved" && (
+          <View className={`status-overlay status-overlay-${data.status}`}>
+            <Text className="status-overlay-text">
+              {data.status === "pending"
+                ? "审核中"
+                : data.status === "rejected"
+                ? "未通过"
+                : ""}
+            </Text>
           </View>
         )}
       </View>

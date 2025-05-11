@@ -1,0 +1,46 @@
+.custom-nav-bar {
+  width: 100%;
+  background-color: #fff; // 导航栏背景色
+  position: fixed; // 固定在顶部
+  top: 0;
+  left: 0;
+  z-index: 1000; //确保在最上层
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); // 可选的底部阴影
+
+  .nav-bar-content {
+    display: flex;
+    align-items: center;
+    position: relative; // 用于定位标题和按钮
+    padding: 0 10px; // 左右内边距
+  }
+
+  .back-button {
+    position: absolute; // 使用绝对定位，方便标题居中
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 5px; // 增大点击区域
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-bar-title {
+    flex: 1;
+    text-align: center;
+    font-size: 17px; // 根据设计稿调整
+    font-weight: bold;
+    color: #000; // 标题颜色
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    // 为了确保标题在有返回按钮时也能居中，可能需要更复杂的布局或JS计算
+    // 一个简单的处理是让 back-button 和 actions-placeholder 宽度近似
+  }
+
+  .actions-placeholder {
+    // 这个元素用于占据胶囊按钮右侧的空间，辅助标题居中
+    // 如果有实际的右侧按钮，则替换这个 placeholder
+    height: 100%;
+  }
+}

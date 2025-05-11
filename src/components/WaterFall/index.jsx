@@ -18,6 +18,7 @@ const WaterFall = ({
   statusFilter = "approved",
 }) => {
   const scrollViewRef = useRef(null);
+  const isLoadingMore = useRef(false);
   const [scrollViewHeight, setScrollViewHeight] = useState("100vh");
 
   const [travelNotes, setTravelNotes] = useState([]);
@@ -55,11 +56,16 @@ const WaterFall = ({
   }, []);
 
   const fetchTravelNotes = async (pageToFetch, isRefresh = false) => {
-    if (loading || (!isRefresh && !hasMore)) {
+    if (
+      (isLoadingMore.current && pageToFetch !== 1) ||
+      (!isRefresh && !hasMore)
+    ) {
       return;
     }
 
+    isLoadingMore.current = true;
     setLoading(true);
+
     try {
       let response;
       const params = {
@@ -98,23 +104,31 @@ const WaterFall = ({
       }
     } catch (error) {
       console.error(`获取游记列表第 ${pageToFetch} 页失败`, error);
+      setHasMore(false);
     } finally {
       // TODO: 防止切换页面时产生界面闪烁，设置合适的Loading界面
-      if (!isProfile) {
-        setLoading(false);
-      } else {
+      setLoading(false);
+      if (!isRefresh) {
         setTimeout(() => {
-          setLoading(false);
-        }, 1800);
+          isLoadingMore.current = false;
+          console.log(
+            "[WaterFall] isLoadingMore reset to false (after timeout)."
+          );
+        }, 100); // 这个延迟可以调整
       }
+      console.log(
+        `[WaterFall] fetchTravelNotes finished. Loading: ${false}, isLoadingMore (if not refresh): ${
+          isLoadingMore.current
+        }`
+      );
     }
   };
 
   const handleScroll = (event) => {
-    if (!hasMore || loading || !scrollViewHeight) return;
+    if (!hasMore || isLoadingMore.current || !scrollViewHeight) return;
 
     const { scrollTop, scrollHeight } = event.detail;
-    // console.log(scrollTop, scrollHeight, scrollViewHeight);
+    console.log(scrollTop, scrollHeight, scrollViewHeight);
 
     if (scrollTop + scrollViewHeight >= scrollHeight - SCROLL_THRESHOLD) {
       console.log("滚动接近底部，提前加载更多");

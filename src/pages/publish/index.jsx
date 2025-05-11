@@ -10,7 +10,7 @@ import "./index.scss";
 
 // TODO: 上传按钮样式优化
 // TODO: 上传检查互斥类型逻辑优化
-// DONE: 发布成功后跳转至home
+// DONE: 发布成功后跳转至profile
 const Publish = () => {
   // 使用 useCallback 来缓存选择器
   const setActiveTabIndex = useUserStore(
@@ -107,7 +107,7 @@ const Publish = () => {
       setFiles([]);
       setTitle("");
       setContent("");
-      Taro.switchTab({ url: "/pages/home/index" });
+      Taro.switchTab({ url: "/pages/profile/index" });
     } catch (error) {
       console.error("发布失败:", error);
       Taro.showToast({ title: "发布失败", icon: "none" });

@@ -17,11 +17,22 @@ export default defineAppConfig({
   usingComponents: {},
   window: {
     backgroundTextStyle: "light",
+    navigationStyle: "custom",
     navigationBarBackgroundColor: "#fff",
     navigationBarTitleText: "旅行笔记",
     navigationBarTextStyle: "black",
   },
-  componentFramework: "glass-easel",
+  renderer: "skyline", // 全局启用 Skyline
+  rendererOptions: {
+    skyline: {
+      defaultDisplayBlock: true,
+      disableABTest: false,
+      sdkVersionBegin: "2.28.0",
+      sdkVersionEnd: "999.999.999",
+    },
+  },
+  componentFramework: "glass-easel", // Skyline 依赖于 glass-easel
+  lazyCodeLoading: "requiredComponents",
   tabBar: {
     color: "#666666", // 未选中文字颜色
     selectedColor: "#c1ea2b", // 选中文字颜色
