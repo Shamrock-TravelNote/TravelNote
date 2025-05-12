@@ -1,12 +1,13 @@
 import { View, Text, ScrollView, GridView } from "@tarojs/components";
 import { AtLoadMore, AtActivityIndicator } from "taro-ui";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import TravelCard from "@/components/TravelCard";
 import Taro, { usePullDownRefresh } from "@tarojs/taro";
 import { useInfiniteScrollData } from "@/hooks/useInfiniteScrollData";
+import { throttle } from "lodash-es";
 import "./index.scss";
 
-const SCROLL_THRESHOLD = 600;
+const SCROLL_THRESHOLD = 350;
 
 const WaterFall = ({
   keyword = "",
@@ -61,15 +62,38 @@ const WaterFall = ({
     });
   }, []);
 
+  const throttledScrollHandler = useCallback(
+    throttle(
+      (currentScrollTop, currentScrollHeight, currentScrollViewHeight) => {
+        if (currentScrollViewHeight <= 0 || isLoading || !hasMore) {
+          return;
+        }
+        if (
+          currentScrollTop + currentScrollViewHeight >=
+          currentScrollHeight - SCROLL_THRESHOLD
+        ) {
+          console.log(
+            "[WaterFall] Throttled scroll: Threshold reached, calling loadMore."
+          );
+          loadMore();
+        }
+      },
+      500,
+      { leading: false, trailing: true }
+    ),
+    [loadMore, isLoading, scrollViewHeight, SCROLL_THRESHOLD]
+  );
+
   const handleScroll = (event) => {
     if (scrollViewHeight <= 0 || isLoading || !hasMore) {
       return;
     }
     const { scrollTop, scrollHeight } = event.detail;
-    if (scrollTop + scrollViewHeight >= scrollHeight - SCROLL_THRESHOLD) {
-      // console.log("[WaterFall] Scroll threshold reached, calling loadMore.");
-      loadMore();
-    }
+    throttledScrollHandler(scrollTop, scrollHeight, scrollViewHeight);
+    // if (scrollTop + scrollViewHeight >= scrollHeight - SCROLL_THRESHOLD) {
+    //   console.log("[WaterFall] Scroll threshold reached, calling loadMore.");
+    //   loadMore();
+    // }
   };
 
   usePullDownRefresh(async () => {

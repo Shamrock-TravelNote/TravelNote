@@ -25,6 +25,7 @@ export const useInfiniteScrollData = ({
   const [isLoading, setIsLoading] = useState(false); //通用加载状态
   const [isRefreshing, setIsRefreshing] = useState(false); //下拉刷新或key变化导致的强制刷新
   const [error, setError] = useState(null);
+  const [totalItemsFromSource, setTotalItemsFromSource] = useState(0);
 
   // 防止并发的“加载更多”请求
   const isLoadingMoreRef = useRef(false);
@@ -50,7 +51,7 @@ export const useInfiniteScrollData = ({
       setError(null);
       if (isRefreshOperation) {
         setIsRefreshing(true);
-        setCurrentPage(1);
+        // setCurrentPage(1);
         // setItems([]);
         setHasMore(true);
       } else {
@@ -60,8 +61,9 @@ export const useInfiniteScrollData = ({
       // ============= 数据获取 ==================
 
       try {
+        const resolvedPageToFetch = isRefreshOperation ? 1 : pageToFetch;
         const params = {
-          page: isRefreshOperation ? 1 : pageToFetch,
+          page: resolvedPageToFetch,
           limit: PAGE_LIMIT,
           keyword: keyword || undefined,
         };
@@ -76,28 +78,47 @@ export const useInfiniteScrollData = ({
 
         const newItems = response.data || [];
         const totalItemsFromAPI = response.total || 0;
-        // console.log(`[useInfiniteScrollData] API response. New items: ${newItems.length}, Total API: ${totalItemsFromAPI}`);
+        console.log(
+          `[useInfiniteScrollData] API response. New items: ${newItems.length}, Total API: ${totalItemsFromAPI}`
+        );
+
+        setTotalItemsFromSource(totalItemsFromAPI);
 
         setItems(
           isRefreshOperation
             ? newItems
             : (prevItems) => [...prevItems, ...newItems]
         );
+        setCurrentPage(resolvedPageToFetch);
 
-        if (!isRefreshOperation) {
-          setCurrentPage(pageToFetch);
-        }
+        console.log("items:", items);
 
-        const currentTotalAfterUpdate = isRefreshOperation
-          ? newItems.length
-          : items.length + newItems.length;
+        // if (!isRefreshOperation) {
+        //   setCurrentPage(resolvedPageToFetch);
+        // }
 
-        setHasMore(currentTotalAfterUpdate < totalItemsFromAPI);
+        // const currentTotalAfterUpdate = isRefreshOperation
+        //   ? newItems.length
+        //   : items.length + newItems.length;
+
+        // setHasMore(currentTotalAfterUpdate < totalItemsFromAPI);
+
+        // const finalItemsLength =
+        //   (isRefreshOperation ? 0 : items.length) + newItems.length;
+
+        // console.log("isRefreshOperation:", isRefreshOperation);
+        // console.log("之前的长度：", items.length);
+        // console.log("请求目前长度:", finalItemsLength);
+        // console.log("总长度：", totalItemsFromAPI);
+
+        // setHasMore(finalItemsLength < totalItemsFromAPI);
+
         // console.log(`[useInfiniteScrollData] hasMore set to ${currentTotalAfterUpdate < totalItemsFromAPI}. Current approx: ${currentTotalAfterUpdate}, API total: ${totalItemsFromAPI}`);
       } catch (e) {
         console.error("[useInfiniteScrollData] Error fetching data:", e);
         setError(e.message || "数据加载失败");
-        setHasMore(false);
+        setTotalItemsFromSource(0);
+        // setHasMore(false);
       } finally {
         setIsLoading(false);
         if (isRefreshOperation) {
@@ -107,7 +128,7 @@ export const useInfiniteScrollData = ({
         // console.log(`[useInfiniteScrollData] fetchData finished. isLoading: ${false}, isRefreshing: ${false}, isLoadingMoreRef: ${isLoadingMoreRef.current}`);
       }
     },
-    [keyword, isProfile, statusFilter, hasMore]
+    [keyword, isProfile, statusFilter]
   );
 
   // 加载下一页
@@ -119,6 +140,13 @@ export const useInfiniteScrollData = ({
       // console.log(`[useInfiniteScrollData] loadMore skipped. isLoading: ${isLoading}, hasMore: ${hasMore}, isLoadingMoreRef: ${isLoadingMoreRef.current}`);
     }
   }, [isLoading, hasMore, currentPage, fetchData]);
+
+  // 更新hasmore
+  useEffect(() => {
+    if (!isLoading) {
+      setHasMore(items.length < totalItemsFromSource);
+    }
+  }, [items, totalItemsFromSource, isLoading]);
 
   // 刷新函数
   const refresh = useCallback(() => {
