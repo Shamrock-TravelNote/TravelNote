@@ -39,7 +39,7 @@ const Home = () => {
           <SearchBar />
         </View>
         <View className="content">
-          <WaterFall key={waterfallKey} />
+          <WaterFall key={waterfallKey} itemNavigationSource="home" />
         </View>
       </View>
     </View>

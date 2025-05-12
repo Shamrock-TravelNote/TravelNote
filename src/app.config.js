@@ -10,7 +10,7 @@ export default defineAppConfig({
     {
       root: "packageFeature",
       name: "feature",
-      pages: ["pages/detail/index", "pages/search/index"],
+      pages: ["pages/detail/index", "pages/search/index", "pages/edit/index"],
     },
   ],
   enablepullDownRefresh: true,

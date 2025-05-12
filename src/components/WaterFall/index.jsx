@@ -7,12 +7,13 @@ import { useInfiniteScrollData } from "@/hooks/useInfiniteScrollData";
 import { throttle } from "lodash-es";
 import "./index.scss";
 
-const SCROLL_THRESHOLD = 350;
+const SCROLL_THRESHOLD = 450;
 
 const WaterFall = ({
   keyword = "",
   isProfile = false,
   statusFilter = "approved",
+  itemNavigationSource = "unknown",
   // 可以添加一个 onItemsChange 回调，如果父组件需要知道数据变化
 }) => {
   const scrollViewRef = useRef(null);
@@ -159,7 +160,11 @@ const WaterFall = ({
           onItemSize={getItemSize}
         >
           {travelNotes.map((note) => (
-            <TravelCard key={note.id} data={{ ...note }} />
+            <TravelCard
+              key={note.id}
+              data={{ ...note }}
+              navigationSource={{ itemNavigationSource }}
+            />
           ))}
         </GridView>
         {(travelNotes.length > 0 || hasMore) && !isRefreshing && (

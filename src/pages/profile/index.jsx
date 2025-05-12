@@ -101,6 +101,7 @@ const Profile = () => {
         key={waterfallKey}
         isProfile={true}
         statusFilter={tabListDefinition[current].status}
+        itemNavigationSource="profile"
       />
     );
   }, [current, waterfallKey]);

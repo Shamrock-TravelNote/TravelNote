@@ -6,7 +6,7 @@ import travel from "@/services/api/travel";
 import "./index.scss";
 
 // DONE: 视频类型右上角添加播放icon
-const TravelCard = ({ data }) => {
+const TravelCard = ({ data, navigationSource = "unknown" }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
   // const [imageType, setImageType] = useState('horizontal')
@@ -53,9 +53,12 @@ const TravelCard = ({ data }) => {
   };
 
   const handleCardClick = () => {
+    let url = `/packageFeature/pages/detail/index?id=${data.id}`;
+    if (navigationSource) {
+      url += `&from=${navigationSource.itemNavigationSource}`;
+    }
     Taro.navigateTo({
-      url: `/packageFeature/pages/detail/index?id=${data.id}
-`,
+      url: url.replace(/\s+/g, ""),
     });
   };
 

@@ -78,9 +78,9 @@ export const useInfiniteScrollData = ({
 
         const newItems = response.data || [];
         const totalItemsFromAPI = response.total || 0;
-        console.log(
-          `[useInfiniteScrollData] API response. New items: ${newItems.length}, Total API: ${totalItemsFromAPI}`
-        );
+        // console.log(
+        //   `[useInfiniteScrollData] API response. New items: ${newItems.length}, Total API: ${totalItemsFromAPI}`
+        // );
 
         setTotalItemsFromSource(totalItemsFromAPI);
 
@@ -90,8 +90,6 @@ export const useInfiniteScrollData = ({
             : (prevItems) => [...prevItems, ...newItems]
         );
         setCurrentPage(resolvedPageToFetch);
-
-        console.log("items:", items);
 
         // if (!isRefreshOperation) {
         //   setCurrentPage(resolvedPageToFetch);
@@ -146,6 +144,13 @@ export const useInfiniteScrollData = ({
     if (!isLoading) {
       setHasMore(items.length < totalItemsFromSource);
     }
+    // console.log("[useInfiniteScrollData] State Updated:", {
+    //   updatedItems: items, // 这是最新的 items 数组
+    //   updatedItemsCount: items.length,
+    //   currentPage: currentPage, // 这是最新的 currentPage
+    //   hasMore: items.length < totalItemsFromSource, // 可以顺便打印计算出的 hasMore
+    //   totalInSource: totalItemsFromSource,
+    // });
   }, [items, totalItemsFromSource, isLoading]);
 
   // 刷新函数

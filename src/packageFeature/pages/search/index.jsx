@@ -7,7 +7,7 @@ import { useUserStore, checkUserLoggedIn } from "@/store";
 import "./index.scss";
 
 // DONE：实现搜索逻辑
-// TODO：搜索用户名、昵称、内容，配合后端API
+// DONE：搜索用户名、昵称、内容，配合后端API
 // TODO：搜索历史记录（搭配后端新增数据字段）
 // TODO：语义化搜索（待定）
 // TODO：搜索推荐词（待定）
@@ -58,6 +58,7 @@ const SearchPage = () => {
           <WaterFall
             key={`search-${currentSearchKeyword}-${searchTrigger}`}
             keyword={currentSearchKeyword}
+            itemNavigationSource="search"
           />
         ) : (
           <View className="empty-search-tip">

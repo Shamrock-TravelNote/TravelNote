@@ -178,6 +178,33 @@
           opacity: 0.7;
         }
       }
+
+      .share-button-custom {
+        padding: 0;
+        margin: 0;
+        background-color: transparent !important;
+        border: none !important;
+        border-radius: 0;
+        line-height: initial;
+        text-align: inherit;
+        outline: none;
+
+        &::after {
+          border: none !important;
+          display: none !important;
+        }
+
+        .at-icon {
+          margin-bottom: 4px;
+          font-size: 20px;
+          color: #666;
+        }
+
+        .action-text {
+          font-size: 22px;
+          color: #666;
+        }
+      }
     }
   }
 }
