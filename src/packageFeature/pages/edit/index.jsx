@@ -8,7 +8,7 @@ import MediaPicker from "@/components/MediaPicker";
 import { upload, travel } from "@/services";
 import "./index.scss";
 
-// TODO: 编辑中若删除图片，OSS也要同步删除
+// DONE: 编辑中若删除图片，OSS也要同步删除
 const EditTravelPage = () => {
   const router = useRouter();
   const travelId = router.params.id;
@@ -198,7 +198,13 @@ const EditTravelPage = () => {
     <View className="publish">
       <View className="publish-form">
         <Text className="form-title">编辑游记</Text>
-        <MediaPicker value={files} maxCount={9} onChange={handleMediaChange} />
+        <View className="media-picker-container">
+          <MediaPicker
+            value={files}
+            maxCount={9}
+            onChange={handleMediaChange}
+          />
+        </View>
         <Input
           className="title-input"
           placeholder="添加标题"
