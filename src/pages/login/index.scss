@@ -4,6 +4,7 @@ $card-background: #ffffff;
 $text-color-primary: #333333;
 $text-color-secondary: #555555;
 $input-border-color: #e0e0e0;
+$error-color: #ff4d4f;
 
 .auth {
   // background-color: #f5f5f5;
@@ -25,22 +26,22 @@ $input-border-color: #e0e0e0;
   .page-title {
     font-size: 26px;
     font-weight: bold;
-    color: #fff; // 在渐变背景上使用白色文字
+    color: #fff;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     margin-bottom: 25px;
     text-align: center;
   }
 
   .form-card {
-    width: 100%; // 在小屏幕上占满宽度
-    max-width: 520px; // 在大屏幕上的最大宽度
+    width: 100%;
+    max-width: 520px;
     background-color: $card-background;
-    padding: 30px 25px; // 卡片内部的填充
-    border-radius: 12px; // 更圆润的边角
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); // 卡片阴影
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 18px; // 使用 gap 来控制子元素间距，更现代
+    gap: 18px;
     margin-bottom: 250px;
 
     .title {
@@ -51,6 +52,13 @@ $input-border-color: #e0e0e0;
       color: #333;
     }
 
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
     .input {
       width: 100%;
       height: 50px;
@@ -59,10 +67,23 @@ $input-border-color: #e0e0e0;
       margin-bottom: 5px;
       // padding: 0 10px;
       font-size: 20px;
+      transition: border-color 0.3s ease;
 
-      &.focused {
-        
-        outline: none;
+      // &.focused {
+      //   outline: none;
+      // }
+
+      &.focused,
+      &:focus {
+        border-color: $theme-color-primary;
+        outline: none; // 移除默认outline
+        // box-shadow: 0 0 0 2px rgba($theme-color-primary, 0.2); // 可选的焦点光晕
+      }
+
+      // 错误样式
+      &.error {
+        border-color: $error-color !important; // 使用 !important 确保覆盖其他状态，或者提高选择器优先级
+        // background-color: lighten($error-color, 35%); // 可选：给一点浅红色背景提示
       }
 
       // 为 placeholder 设置样式 (Taro 中可能需要针对不同端进行适配)
@@ -70,6 +91,14 @@ $input-border-color: #e0e0e0;
         // 标准浏览器
         color: #999999;
       }
+    }
+
+    .error-message {
+      color: $error-color;
+      font-size: 18px;
+      padding-left: 5px;
+      margin-top: 4px;
+      min-height: 20px;
     }
 
     .submit-btn {
@@ -82,10 +111,7 @@ $input-border-color: #e0e0e0;
       margin-top: 20px;
 
       &:hover {
-        background-color: darken(
-          $theme-color-primary,
-          5%
-        ); // 鼠标悬停时颜色加深
+        background-color: darken($theme-color-primary, 5%);
       }
 
       &:active {
