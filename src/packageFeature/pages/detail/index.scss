@@ -1,6 +1,3 @@
-// 引入 Taro UI 的 Icon 字体 (如果还没有全局引入)
-// @import "~taro-ui/dist/style/components/icon.scss";
-
 .loading-container,
 .error-container,
 .empty-container {
@@ -132,6 +129,87 @@
       color: #333;
       word-wrap: break-word; // 自动换行
       white-space: pre-wrap; // 保留换行和空格
+    }
+  }
+
+  .status-notice-card {
+    background-color: #f9f9f9; // 浅色背景
+    border-radius: 12px; // 圆角
+    padding: 24px; // 内边距
+    margin: 24px; // 外边距，使其与页面其他内容有间隔
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); // 轻微阴影
+
+    .status-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center; // 水平居中
+      text-align: center; // 文本居中
+
+      &.pending-status {
+        // 等待审核状态的特定样式 (如果需要)
+        .status-tag-pending {
+          background-color: #ffc107; // 黄色背景 (示例)
+          color: #fff;
+        }
+        .status-description {
+          margin-top: 8px;
+          color: #555;
+        }
+      }
+
+      &.rejected-status {
+        // 审核未通过状态的特定样式
+        .status-tag-rejected {
+          background-color: #ff4d4f; // 红色背景 (示例)
+          color: #fff;
+        }
+        .reason-line {
+          margin-top: 12px; // 与状态标签的间距
+          .reason-tag {
+            background-color: #6c757d; // 深灰色背景 (示例)
+            color: #fff;
+          }
+          .reason-text {
+            margin-left: 20px; // 原因文字与标签的间距
+            margin-bottom: 11px;
+            color: #555;
+          }
+        }
+      }
+
+      .status-tag,
+      .reason-tag {
+        display: inline-block; // 使其表现像标签
+        padding: 6px 12px;
+        border-radius: 16px; // 圆角标签
+        font-size: 24px;
+        font-weight: 500;
+        line-height: 1.2; // 调整行高使文字在标签内更居中
+        margin-bottom: 4px; // 如果下方还有内容，给一点间距
+      }
+
+      .status-line {
+        width: 100%; // 确保行充满容器，以便内部居中
+        display: flex;
+        flex-direction: column; // 如果一行内有多个元素需要垂直排列
+        align-items: center; // 内部元素居中
+        justify-content: center;
+
+        &.reason-line {
+          flex-direction: row; // 原因标签和原因文本在同一行
+          align-items: center; // 垂直居中对齐
+          justify-content: center;
+          flex-wrap: wrap; // 如果原因太长，允许换行
+        }
+      }
+
+      .status-description {
+        font-size: 28px;
+        color: #333;
+        line-height: 1.6;
+        margin-top: 8px; // 与标签的间距
+        max-width: 90%; // 限制最大宽度，避免文本太散
+      }
     }
   }
 

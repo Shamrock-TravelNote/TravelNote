@@ -1,5 +1,5 @@
 import { View, Text, Image } from "@tarojs/components";
-import { useTabItemTap } from "@tarojs/taro";
+import Taro, { useTabItemTap } from "@tarojs/taro";
 import { useState, useMemo, useEffect } from "react";
 import {
   useUserStore,
@@ -9,6 +9,7 @@ import {
 } from "@/store";
 import TravelPane from "@/components/TravelPane";
 import WaterFall from "@/components/WaterFall";
+import { upload, auth } from "@/services";
 import "./index.scss";
 
 const TAB_LIST_DEFINTION_PROFILE = [
@@ -22,6 +23,7 @@ const Profile = () => {
   const [current, setCurrent] = useState(0);
 
   const userInfo = useUserStore((state) => state.userInfo);
+  const setUserInfo = useUserStore((state) => state.setUserInfo);
   const activeTabIndex = useUserStore((state) => state.activeTabIndex);
   const setActiveTabIndex = useUserStore((state) => state.setActiveTabIndex);
 
@@ -29,6 +31,11 @@ const Profile = () => {
     (state) => state.lastProfileRefreshTime
   );
   const setLastTabBarTap = useUIStore((state) => state.setLastTabBarTap);
+  const triggerProfileRefresh = useUIStore(
+    (state) => state.triggerProfileRefresh
+  );
+
+  const [displayAvatar, setDisplayAvatar] = useState(userInfo.avatar);
 
   useTabItemTap((item) => {
     console.log("[ProfilePage] useTabItemTap:", item);
@@ -74,7 +81,8 @@ const Profile = () => {
     if (activeTabIndex !== 2) {
       setActiveTabIndex(2);
     }
-  }, [setActiveTabIndex]);
+    setDisplayAvatar(userInfo.avatar);
+  }, [setActiveTabIndex, userInfo.avatar]);
 
   const userStats = {
     posts: 12,
@@ -111,18 +119,81 @@ const Profile = () => {
     [tabListDefinition]
   );
 
+  const handleChangeAvatar = async () => {
+    console.log("usrindo", userInfo);
+    if (!userInfo || !userInfo.id) {
+      Taro.showToast({ title: "请先登录", icon: "none" });
+      checkUserLoggedIn();
+      return;
+    }
+    try {
+      const res = await Taro.chooseImage({
+        count: 1,
+        sizeType: ["compressed"],
+        sourceType: ["album", "camera"],
+      });
+
+      const tempFilePath = res.tempFilePaths[0];
+      setDisplayAvatar(tempFilePath);
+
+      Taro.showLoading({ title: "上传中..." });
+
+      const fileToUpload = { url: tempFilePath, type: "image" };
+      const newOssAvatarUrl = await upload.uploadTempFile(fileToUpload);
+
+      if (newOssAvatarUrl) {
+        await auth.updateUserProfile({
+          avatar: newOssAvatarUrl,
+        });
+
+        setUserInfo({ ...userInfo, avatar: newOssAvatarUrl });
+        setDisplayAvatar(newOssAvatarUrl);
+
+        Taro.hideLoading();
+        Taro.showToast({ title: "头像更新成功！", icon: "success" });
+
+        triggerProfileRefresh();
+      } else {
+        Taro.hideLoading();
+        Taro.showToast({ title: "头像上传失败", icon: "error" });
+        setDisplayAvatar(
+          userInfo?.avatar ||
+            "https://travelnote-data.oss-cn-nanjing.aliyuncs.com/Gemini_Generated_Image_49ztd749ztd749zt.jpeg"
+        );
+      }
+    } catch (err) {
+      Taro.hideLoading();
+      if (err.errMsg === "chooseImage:fail cancel") {
+        console.log("用户取消选择头像");
+        setDisplayAvatar(
+          userInfo?.avatar ||
+            "https://travelnote-data.oss-cn-nanjing.aliyuncs.com/Gemini_Generated_Image_49ztd749ztd749zt.jpeg"
+        );
+      } else if (err.message && err.message.includes("请先登录")) {
+        checkUserLoggedIn();
+      } else {
+        Taro.showToast({
+          title: err.data?.message || err.message || "操作失败",
+          icon: "none",
+        });
+        setDisplayAvatar(
+          userInfo?.avatar ||
+            "https://travelnote-data.oss-cn-nanjing.aliyuncs.com/Gemini_Generated_Image_49ztd749ztd749zt.jpeg"
+        );
+        console.error("更换头像失败:", err);
+      }
+    }
+  };
+
   return (
     <View className="profile">
       <View className="user-info">
-        <View className="avatar-wrapper">
+        <View className="avatar-wrapper" onClick={handleChangeAvatar}>
           <Image
             className="avatar"
             mode="aspectFill"
             lazyLoad
-            src={
-              userInfo?.avatar ||
-              "https://travelnote-data.oss-cn-nanjing.aliyuncs.com/Gemini_Generated_Image_49ztd749ztd749zt.jpeg"
-            }
+            src={displayAvatar}
           />
         </View>
         <Text className="nickname">{userInfo?.nickname || "旅行者"}</Text>

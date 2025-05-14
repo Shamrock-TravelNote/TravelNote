@@ -8,7 +8,7 @@
     background: #fff;
     padding: 40px 20px;
     text-align: center;
-    
+
     .avatar-wrapper {
       width: 120px;
       height: 120px;
@@ -19,7 +19,7 @@
       align-items: center;
       justify-content: center;
 
-      .avatar{
+      .avatar {
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -53,13 +53,13 @@
 
     .stat-item {
       text-align: center;
-      
+
       .number {
         font-size: 32px;
         font-weight: bold;
         display: block;
       }
-      
+
       .label {
         font-size: 24px;
         color: #666;
@@ -68,7 +68,9 @@
   }
 
   .action-list {
-    flex:1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     margin-top: 20px;
     background: #fff;
@@ -83,17 +85,35 @@
     }
 
     .travel-list {
-      display: block;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
       columns: 2;
       column-gap: 20px;
       background: #fff;
       border-radius: 12px;
-      padding: 16px;
+      // padding: 16px;
       box-sizing: border-box;
       width: 100%;
+      border-radius: 12px;
 
-      .scroll-view {
-        height: 100%;
+      .at-tabs__header {
+        flex-shrink: 0;
+      }
+
+      .at-tabs__body {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 10px;
+      }
+
+      .at-tabs__pane {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
       }
     }
   }

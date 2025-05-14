@@ -345,29 +345,28 @@ const TravelDetail = () => {
         </Text>
       </View>
       {isAuthor && status && status !== "approved" && (
-        <View
-          className={`status-notice-area ${
-            status === "pending" ? "status-pending" : "status-rejected"
-          }`}
-        >
+        <View className="status-notice-card">
           {status === "pending" && (
-            <Text className="status-text">状态：您的笔记正在等待审核中...</Text>
+            <View className="status-content pending-status">
+              <Text className="status-tag status-tag-pending">等待审核</Text>
+              <Text className="status-description">
+                您的笔记正在等待审核中...
+              </Text>
+            </View>
           )}
           {status === "rejected" && (
-            <View>
-              <Text className="status-text status-text-title">
-                状态：笔记审核未通过
-              </Text>
-              {rejectionReason && (
-                <Text className="status-text rejection-reason">
-                  原因：{rejectionReason}
+            <View className="status-content rejected-status">
+              <View className="status-line">
+                <Text className="status-tag status-tag-rejected">
+                  审核未通过
                 </Text>
-              )}
-              {!rejectionReason && (
-                <Text className="status-text rejection-reason">
-                  原因：暂无具体原因，请联系管理员。
+              </View>
+              <View className="status-line reason-line">
+                <Text className="reason-tag">原因</Text>
+                <Text className="status-description reason-text">
+                  {rejectionReason || "暂无具体原因，请联系管理员。"}
                 </Text>
-              )}
+              </View>
             </View>
           )}
         </View>

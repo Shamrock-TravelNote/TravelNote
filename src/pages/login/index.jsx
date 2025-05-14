@@ -83,7 +83,7 @@ const Auth = () => {
     });
 
     if (usernameError || passwordError) {
-      Taro.showToast({ title: "请检查输入项", icon: "none" });
+      Taro.showToast({ title: "请检查输入项", icon: "none", duration: 3000 });
       return;
     }
 

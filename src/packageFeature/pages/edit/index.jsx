@@ -168,6 +168,7 @@ const EditTravelPage = () => {
           params.video = uploadedOSSUrls[0];
       }
 
+      console.log("ID:", travelId, "params", travelId);
       // 调用更新 API
       await travel.updateTravel(travelId, params);
 

@@ -89,7 +89,7 @@ const WaterFall = ({
   );
 
   const handleScroll = (event) => {
-    console.log("scroll", event.detail);
+    // console.log("scroll", event.detail);
     if (scrollViewHeight <= 0 || isLoading || !hasMore) {
       return;
     }
