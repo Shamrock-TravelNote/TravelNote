@@ -1,64 +1,232 @@
 .travel-card {
-  margin-bottom: 20px;
+  // width: calc((100% - 20px) / 2);
+  grid-row-start: auto;
+  // grid-row-end: span 180;
+  width: 100%;
+  height: fit-content;
+  align-self: flex-start;
+  margin: 0;
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  // height: auto;
+  display: flex;
+  position: relative;
+  // break-inside: avoid;
 
-  .card-image {
+  &.status-pending {
+    // 方法1: 整体变灰并降低透明度
+    // filter: grayscale(80%); // 80% 灰度
+    // opacity: 0.7;
+
+    // 方法2: 添加灰色覆盖层 (更推荐，对文字影响小)
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(150, 150, 150, 0.2); // 半透明灰色覆盖
+      z-index: 2; // 确保在图片之上，但在播放图标和状态文字之下
+      border-radius: इन्हेरिट; // 继承父元素的圆角
+      pointer-events: none; // 允许点击穿透到下面的元素 (除非你想阻止)
+    }
+
+    .card-image-container .card-image {
+      filter: grayscale(60%); // 单独让图片也变灰一些
+    }
+
+    // 你也可以让文字颜色变浅
+    // .card-content .title,
+    // .card-content .author-name,
+    // .card-content .like-count {
+    //   color: #999;
+    // }
+  }
+
+  &.status-rejected {
+    // 方法1: 降低透明度，并可能添加红色边框或色调
+    // opacity: 0.8;
+    // border: 2px solid rgba(255, 100, 100, 0.5);
+
+    // 方法2: 添加浅红色覆盖层
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 100, 100, 0.15); // 半透明浅红色覆盖
+      z-index: 2;
+      border-radius: इन्हेरिट;
+      pointer-events: none;
+    }
+    .card-image-container .card-image {
+      filter: sepia(30%) saturate(150%) hue-rotate(-20deg) brightness(95%); // 尝试给图片一点偏红的色调，可调整
+      // 或者简单地降低饱和度和亮度
+      // filter: saturate(70%) brightness(90%);
+    }
+
+    // 可以考虑给文字也加上一些提示色
+    // .card-content .title {
+    //   color: #c70000;
+    // }
+  }
+
+  &.vertical-card-style {
+    height: 550px;
+    .card-image-container {
+      height: 400px;
+    }
+  }
+
+  &.horizontal-card-style {
+    height: 390px;
+    .card-image-container {
+      height: 240px;
+    }
+  }
+
+  .card-image-container {
     width: 100%;
-    height: 360px;
-    object-fit: cover;
+    position: relative;
+    min-height: 150px;
+
+    .play-icon-container {
+      // 直接作为 card-image-container 的子级样式
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 4; // 确保在 status-overlay 和 ::after 之上
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      padding: 6px; // 根据你的图标大小调整
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .at-icon {
+        position: relative;
+        left: 5px;
+        display: block;
+      }
+    }
+
+    .card-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background-color: #f0f0f0;
+    }
+
+    // .status-overlay {
+    //   // 可选的状态文字覆盖层样式
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   width: 100%;
+    //   height: 100%;
+    //   display: flex;
+    //   align-items: center;
+    //   justify-content: center;
+    //   z-index: 3; // 比 ::after 覆盖层更高
+    //   background-color: rgba(0, 0, 0, 0.2); // 轻微的暗色背景使文字更突出
+    //   border-radius: इन्हेरिट; // 与卡片圆角一致
+
+    //   .status-overlay-text {
+    //     color: white;
+    //     font-size: 16px;
+    //     font-weight: bold;
+    //     padding: 5px 10px;
+    //     border-radius: 4px;
+    //     background-color: rgba(0, 0, 0, 0.4); // 给文字本身一个更深的背景
+    //   }
+
+    //   .play-icon-container {
+    //     position: absolute;
+    //     top: 8px;
+    //     right: 8px;
+    //     z-index: 1;
+    //     background-color: rgba(0, 0, 0, 0.3);
+    //     border-radius: 50%;
+    //     padding: 6px;
+    //     display: flex;
+    //     align-items: center;
+    //     justify-content: center;
+
+    //     .at-icon {
+    //       position: relative;
+    //       left: 5px;
+    //       display: block; // 有助于某些情况下的对齐
+    //     }
+    //   }
+    // }
+
+    // .card-image {
+    //   width: 100%;
+    //   object-fit: cover;
+    // }
   }
 
   .card-content {
     padding: 16px;
+    // height: 200px; // 固定内容区域高度
+    flex: 1; // 移除flex: 1，使用固定高度
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: auto;
 
     .title {
       font-size: 32px;
       font-weight: bold;
       margin-bottom: 16px;
       display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
 
-    .author-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-
-      .avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        margin-right: 12px;
-      }
-
-      .author-name {
-        font-size: 28px;
-        color: #666;
-      }
-    }
-
-    .interaction-row {
+    .bottom-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-top: auto;
+
+      .author-info {
+        display: flex;
+        align-items: center;
+
+        .avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          margin-right: 12px;
+        }
+
+        .author-name {
+          font-size: 28px;
+          color: #666;
+        }
+      }
 
       .like-btn {
         display: flex;
         align-items: center;
-        padding: 8px 0;
+        padding: 8px 12px;
 
         .like-count {
           font-size: 24px;
           color: #666;
           margin-left: 8px;
         }
-      }
-
-      .views {
-        font-size: 24px;
-        color: #999;
       }
     }
   }

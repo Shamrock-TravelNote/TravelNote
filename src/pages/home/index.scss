@@ -1,0 +1,62 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .header {
+    // padding: 20px;
+    flex-shrink: 0;
+    // background: #fff;
+    // .title {
+    //   font-size: 36px;
+    //   font-weight: bold;
+    // }
+  }
+
+  .content {
+    flex: 1;
+    overflow: hidden;
+    padding: 10px;
+    box-sizing: border-box;
+
+    // .scroll-view {
+    //   height: 100%;
+    // }
+    
+    // .travel-list {
+    //   // display: block;
+    //   // columns: 2;
+    //   // column-gap: 20px;
+    //   display: grid;
+    //   grid-template-columns: repeat(2, minmax(100px, 1fr));
+    //   grid-gap: 1px;
+    //   grid-auto-rows: 5px;
+    //   // gap: 20px;
+    //   background: #fff;
+    //   border-radius: 12px;
+    //   padding: 16px;
+    //   box-sizing: border-box;
+    //   width: 100%;
+    //   justify-items: center;
+    // }
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    // margin: 24px;
+    padding: 16px 24px;
+    background: #f6f6f6;
+    border-radius: 36px;
+    
+    .at-icon {
+      font-size: 32px;
+    }
+
+    .placeholder {
+      color: #999;
+      font-size: 28px;
+    }
+  }
+}

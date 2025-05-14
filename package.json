@@ -44,6 +44,7 @@
   "dependencies": {
     "@babel/runtime": "^7.24.4",
     "@tarojs/components": "4.0.12",
+    "@tarojs/components-advanced": "4.0.13",
     "@tarojs/helper": "4.0.12",
     "@tarojs/plugin-framework-react": "4.0.12",
     "@tarojs/plugin-platform-alipay": "4.0.12",
@@ -59,9 +60,14 @@
     "@tarojs/shared": "4.0.12",
     "@tarojs/taro": "4.0.12",
     "axios": "^1.9.0",
+    "axios-taro-adapter": "^0.0.3",
+    "crypto-js": "^4.2.0",
+    "lodash-es": "^4.17.21",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "taro-ui": "^3.3.0"
+    "react-masonry-css": "^1.0.16",
+    "taro-ui": "^3.3.0",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

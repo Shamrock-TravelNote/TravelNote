@@ -1,4 +1,9 @@
 @import "taro-ui/dist/style/index.scss";
+@import "taro-ui/dist/style/components/load-more.scss";
+@import "taro-ui/dist/style/components/activity-indicator.scss";
+@import "taro-ui/dist/style/components/loading.scss";
+
+// ...existing styles...
 
 page {
   background-color: #f8f8f8;
