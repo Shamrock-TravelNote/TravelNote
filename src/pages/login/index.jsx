@@ -233,7 +233,7 @@ const Auth = () => {
               errors.username ? "error" : ""
             }`}
             placeholder="用户名"
-            focus
+            // focus
             value={formData.username}
             onFocus={() => {
               setIsUserFocused(true);

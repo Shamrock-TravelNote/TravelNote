@@ -1,5 +1,5 @@
 import { View, Text, Image } from "@tarojs/components";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { AtIcon } from "taro-ui";
 import Taro from "@tarojs/taro";
 import travel from "@/services/api/travel";
@@ -126,4 +126,4 @@ const TravelCard = ({ data, navigationSource = "unknown" }) => {
   );
 };
 
-export default TravelCard;
+export default React.memo(TravelCard);

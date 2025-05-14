@@ -53,7 +53,10 @@ const WaterFall = ({
         .select(".scroll-view")
         .boundingClientRect((rect) => {
           if (rect && rect.height > 0) {
-            // console.log("[WaterFall] ScrollView height calculated:", rect.height);
+            console.log(
+              "[WaterFall] ScrollView height calculated:",
+              rect.height
+            );
             setScrollViewHeight(rect.height);
           } else {
             // console.warn("[WaterFall] ScrollView height query failed:", rect);
@@ -86,6 +89,7 @@ const WaterFall = ({
   );
 
   const handleScroll = (event) => {
+    console.log("scroll", event.detail);
     if (scrollViewHeight <= 0 || isLoading || !hasMore) {
       return;
     }
@@ -150,6 +154,8 @@ const WaterFall = ({
         className="scroll-view"
         scrollY
         scrollWithAnimation
+        enhanced={true}
+        showScrollbar={false}
         onScroll={handleScroll}
       >
         <GridView
