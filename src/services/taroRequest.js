@@ -126,13 +126,40 @@ Taro.addInterceptor(customInterceptor);
 // };
 
 const request = {
+  _makeRequest: (options) => {
+    const task = Taro.request(options); // <--- 获取原始的 requestTask
+    const promise = new Promise((resolve, reject) => {
+      task
+        .then((response) => {
+          // 这里模拟拦截器成功回调的部分逻辑（或假设拦截器已处理）
+          // 重要的是，我们现在有 task 和 promise
+          // 注意：这里的 response 已经是拦截器处理过的了，因为拦截器先执行
+          // 所以，如果拦截器返回 res.data，这里的 response 就是 res.data
+          resolve(response);
+        })
+        .catch((error) => {
+          // 这里的 error 也是拦截器处理过的
+          reject(error);
+        });
+    });
+
+    // 将 abort 方法附加到 promise 上
+    // 这样业务代码 await request.get(...) 得到的是一个带有 abort 方法的 promise
+    promise.abort = () => {
+      console.log("[taroRequest] Aborting task from promise wrapper");
+      if (task && typeof task.abort === "function") {
+        task.abort();
+      }
+    };
+    return promise;
+  },
   get: (url, data, options = {}) => {
-    return Taro.request({
+    return request._makeRequest({
       url: BASE_URL + url,
       data,
       method: "GET",
-      header: options.header || {}, // 允许在调用时覆盖或添加header
-      ...options, // 其他 Taro.request 支持的参数，如 timeout
+      header: options.header || {},
+      ...options,
     });
   },
   post: (url, data, options = {}) => {

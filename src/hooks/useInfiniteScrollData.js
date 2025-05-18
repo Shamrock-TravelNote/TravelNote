@@ -30,6 +30,19 @@ export const useInfiniteScrollData = ({
   // 防止并发的“加载更多”请求
   const isLoadingMoreRef = useRef(false);
 
+  // 新增：用于存储当前活动的 requestTask (或带有 abort 方法的 Promise-like 对象)
+  const activeRequestRef = useRef(null);
+  // 新增：用于在异步回调中检查组件是否仍挂载
+  const isMountedRef = useRef(true);
+
+  // 组件挂载与卸载时更新 isMountedRef
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   // 数据获取
   const fetchData = useCallback(
     async (pageToFetch, isRefreshOperation = false) => {
@@ -47,6 +60,20 @@ export const useInfiniteScrollData = ({
         return;
       }
 
+      // 关键点1: 中止上一个活动请求 (主要针对刷新或参数变化)
+      if (
+        activeRequestRef.current &&
+        (isRefreshOperation || (pageToFetch === 1 && !isLoadingMoreRef.current))
+      ) {
+        if (typeof activeRequestRef.current.abort === "function") {
+          console.log(
+            "[useInfiniteScrollData] Aborting previous active request before new fetch."
+          );
+          activeRequestRef.current.abort();
+        }
+        activeRequestRef.current = null;
+      }
+
       setIsLoading(true);
       setError(null);
       if (isRefreshOperation) {
@@ -60,6 +87,7 @@ export const useInfiniteScrollData = ({
 
       // ============= 数据获取 ==================
 
+      let currentRequestObject;
       try {
         const resolvedPageToFetch = isRefreshOperation ? 1 : pageToFetch;
         const params = {
@@ -68,13 +96,17 @@ export const useInfiniteScrollData = ({
           keyword: keyword || undefined,
         };
 
-        let response;
+        let currentRequestObject;
         if (!isProfile) {
-          response = await travelService.getTravelList(params);
+          currentRequestObject = travelService.getTravelList(params);
         } else {
           params.status = statusFilter;
-          response = await travelService.getMyTravelList(params);
+          currentRequestObject = travelService.getMyTravelList(params);
         }
+        activeRequestRef.current = currentRequestObject;
+
+        let response = await currentRequestObject;
+        console.log(currentRequestObject);
 
         const newItems = response.data || [];
         const totalItemsFromAPI = response.total || 0;
@@ -83,11 +115,22 @@ export const useInfiniteScrollData = ({
         // );
 
         setTotalItemsFromSource(totalItemsFromAPI);
+        console.log("olditems:", items);
+        console.log("newitems:", newItems);
+        console.log(
+          `[FETCH_DATA_LOG] Keyword: ${keyword}, Page: ${resolvedPageToFetch}, isRefresh: ${isRefreshOperation}, About to call setItems with newItems count: ${newItems.length}`
+        );
 
         setItems(
           isRefreshOperation
             ? newItems
-            : (prevItems) => [...prevItems, ...newItems]
+            : (prevItems) => {
+                const updatedItems = [...prevItems, ...newItems];
+                console.log(
+                  `[FETCH_DATA_LOG] Keyword: ${keyword}, setItems for loadMore. Prev count: ${prevItems.length}, New total: ${updatedItems.length}`
+                );
+                return updatedItems;
+              }
         );
         setCurrentPage(resolvedPageToFetch);
 
@@ -116,6 +159,18 @@ export const useInfiniteScrollData = ({
         console.error("[useInfiniteScrollData] Error fetching data:", e);
         setError(e.message || "数据加载失败");
         setTotalItemsFromSource(0);
+        // 关键点3: 区分处理 AbortError
+        // 你需要根据 Taro abort() 实际抛出的错误特征来判断
+        if (
+          err &&
+          (err.errMsg?.includes("request:fail abort") ||
+            err.name === "AbortError") /* 或其他Taro中止特定标识 */
+        ) {
+          console.log("[useInfiniteScrollData] Fetch aborted as expected.");
+        } else {
+          console.error("[useInfiniteScrollData] Error fetching data:", err);
+          setError(err.message || err.errMsg || "数据加载失败");
+        }
         // setHasMore(false);
       } finally {
         setIsLoading(false);
@@ -123,6 +178,10 @@ export const useInfiniteScrollData = ({
           setIsRefreshing(false);
         }
         isLoadingMoreRef.current = false;
+        // 关键点4: 如果当前完成的请求是 activeRequestRef 中的那个，则清除它
+        if (activeRequestRef.current === currentRequestObject) {
+          activeRequestRef.current = null;
+        }
         // console.log(`[useInfiniteScrollData] fetchData finished. isLoading: ${false}, isRefreshing: ${false}, isLoadingMoreRef: ${isLoadingMoreRef.current}`);
       }
     },
@@ -166,6 +225,23 @@ export const useInfiniteScrollData = ({
       refresh();
     }
   }, [autoLoadFirstPage, refresh]);
+
+  // 关键点6: 组件卸载时的最终清理
+  useEffect(() => {
+    return () => {
+      console.log(
+        "[useInfiniteScrollData] Component unmounting, attempting to abort active request."
+      );
+      if (
+        activeRequestRef.current &&
+        typeof activeRequestRef.current.abort === "function"
+      ) {
+        console.log("abort!!");
+        activeRequestRef.current.abort();
+        activeRequestRef.current = null;
+      }
+    };
+  }, []); // 空依赖数组，仅在卸载时运行
 
   return {
     items, // 当前数据列表

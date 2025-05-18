@@ -1,5 +1,5 @@
 import { View, Text, Image } from "@tarojs/components";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { AtIcon } from "taro-ui";
 import Taro from "@tarojs/taro";
 import travel from "@/services/api/travel";
@@ -9,6 +9,10 @@ import "./index.scss";
 const TravelCard = ({ data, navigationSource = "unknown" }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likes, setLikes] = useState(0);
+  const [showMedia, setShowMedia] = useState(false); // 控制是否显示媒体
+  const cardRef = useRef(null); // 用于 IntersectionObserver
+  const observerRef = useRef(null);
+  const cardId = useRef(`travel-card-${data.id}`);
   // const [imageType, setImageType] = useState('horizontal')
 
   useEffect(() => {
@@ -16,6 +20,30 @@ const TravelCard = ({ data, navigationSource = "unknown" }) => {
     // checkImageOrientation()
     checkLikeStatus();
   }, [data]);
+
+  useEffect(() => {
+    observerRef.current = Taro.createIntersectionObserver(this);
+    // 延迟 observe 的调用
+    Taro.nextTick(() => {
+      if (observerRef.current && cardRef.current) {
+        observerRef.current
+          .relativeToViewport({ bottom: 50 })
+          .observe(`#${cardId.current}`, () => {
+            // 使用 ID 选择器
+            setShowMedia(true);
+            if (observerRef.current) {
+              observerRef.current.disconnect();
+            }
+          });
+      }
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
 
   // const checkImageOrientation = () => {
   //   Taro.getImageInfo({
@@ -78,14 +106,23 @@ const TravelCard = ({ data, navigationSource = "unknown" }) => {
   }
 
   return (
-    <View className={cardClassName} onClick={handleCardClick}>
+    <View
+      className={cardClassName}
+      onClick={handleCardClick}
+      ref={cardRef}
+      id={cardId.current}
+    >
       <View className="card-image-container">
-        <Image
-          className="card-image"
-          src={data.cover}
-          mode="aspectFill"
-          lazyLoad
-        />
+        {showMedia ? (
+          <Image
+            className="card-image"
+            src={data.cover}
+            mode="aspectFill"
+            lazyLoad
+          />
+        ) : (
+          <View className="card-image-placeholder" />
+        )}
         {data.mediaType === "video" && (
           <View className="play-icon-container">
             <AtIcon value="play" size="20" color="#fff" />
