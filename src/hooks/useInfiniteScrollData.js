@@ -192,9 +192,10 @@ export const useInfiniteScrollData = ({
   const loadMore = useCallback(() => {
     if (!isLoading && hasMore && !isLoadingMoreRef.current) {
       // console.log('[useInfiniteScrollData] loadMore called.');
-      fetchData(currentPage + 1, false);
+      return fetchData(currentPage + 1, false);
     } else {
       // console.log(`[useInfiniteScrollData] loadMore skipped. isLoading: ${isLoading}, hasMore: ${hasMore}, isLoadingMoreRef: ${isLoadingMoreRef.current}`);
+      return Promise.resolve();
     }
   }, [isLoading, hasMore, currentPage, fetchData]);
 
@@ -254,5 +255,6 @@ export const useInfiniteScrollData = ({
     loadMore, // 加载下一页的函数
     refresh, // 刷新数据的函数
     setItems, // （可选暴露）直接设置 items 的方法，用于某些特殊场景
+    setIsLoading,
   };
 };

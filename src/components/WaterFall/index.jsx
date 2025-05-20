@@ -27,6 +27,7 @@ const WaterFall = ({
     error,
     loadMore,
     refresh,
+    setIsLoading,
   } = useInfiniteScrollData({
     keyword,
     isProfile,
@@ -34,17 +35,20 @@ const WaterFall = ({
     autoLoadFirstPage: true,
   });
 
-  const getItemSize = (index) => {
-    const note = travelNotes[index];
-    if (!note) return 360;
-    return note.mediaType === "video"
-      ? note.detailType === "vertical"
-        ? 540
-        : 380
-      : note.detailType === "vertical"
-      ? 520
-      : 360;
-  };
+  const getItemSize = useCallback(
+    (index) => {
+      const note = travelNotes[index];
+      if (!note) return 360;
+      return note.mediaType === "video"
+        ? note.detailType === "vertical"
+          ? 540
+          : 380
+        : note.detailType === "vertical"
+        ? 520
+        : 360;
+    },
+    [travelNotes]
+  );
 
   useEffect(() => {
     Taro.nextTick(() => {
@@ -79,27 +83,39 @@ const WaterFall = ({
           console.log(
             "[WaterFall] Throttled scroll: Threshold reached, calling loadMore."
           );
-          loadMore();
+          setIsLoading(true);
+          const loadMorePromise = loadMore();
+          if (loadMorePromise) {
+            loadMorePromise.finally(() => {
+              setIsLoading(false);
+            });
+          } else {
+            setIsLoading(false); // 如果 loadMorePromise 为空，也要确保执行
+          }
         }
       },
       500,
       { leading: false, trailing: true }
     ),
-    [loadMore, isLoading, scrollViewHeight, SCROLL_THRESHOLD]
+    [loadMore, isLoading, scrollViewHeight, SCROLL_THRESHOLD, setIsLoading]
   );
 
-  const handleScroll = (event) => {
-    // console.log("scroll", event.detail);
-    if (scrollViewHeight <= 0 || isLoading || !hasMore) {
-      return;
-    }
-    const { scrollTop, scrollHeight } = event.detail;
-    throttledScrollHandler(scrollTop, scrollHeight, scrollViewHeight);
-    // if (scrollTop + scrollViewHeight >= scrollHeight - SCROLL_THRESHOLD) {
-    //   console.log("[WaterFall] Scroll threshold reached, calling loadMore.");
-    //   loadMore();
-    // }
-  };
+  const handleScroll = useCallback(
+    (event) => {
+      // console.log("scroll", event.detail);
+      if (scrollViewHeight <= 0 || isLoading || !hasMore) {
+        return;
+      }
+      const { scrollTop, scrollHeight } = event.detail;
+
+      throttledScrollHandler(scrollTop, scrollHeight, scrollViewHeight);
+      // if (scrollTop + scrollViewHeight >= scrollHeight - SCROLL_THRESHOLD) {
+      //   console.log("[WaterFall] Scroll threshold reached, calling loadMore.");
+      //   loadMore();
+      // }
+    },
+    [throttledScrollHandler, scrollViewHeight, isLoading, hasMore]
+  );
 
   usePullDownRefresh(async () => {
     // console.log("[WaterFall] Pull down refresh triggered by user.");
