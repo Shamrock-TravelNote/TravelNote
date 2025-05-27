@@ -3,6 +3,10 @@
 ## 项目简介
 
 TravelNote是一个面向旅行爱好者的社交分享平台，用户可以发布旅行游记、浏览他人的旅行经历。
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/75fb1949-e02e-4a23-af3b-3f38e4f38817" alt="截屏2" width="300"/>
+</p>
+
 
 **特别说明：本项目当前主要针对小程序端开发和优化，H5 版本暂未进行兼容性适配。**
 
