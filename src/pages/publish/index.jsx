@@ -6,10 +6,12 @@ import Taro from "@tarojs/taro";
 import { useUserStore, checkUserLoggedIn, useUIStore } from "@/store";
 import MediaPicker from "@/components/MediaPicker";
 import { upload, travel } from "@/services";
+import DOMpurify from "dompurify";
 import "./index.scss";
 
 // DONE: 上传检查互斥类型逻辑优化
 // DONE: 发布成功后跳转至profile
+// TODO: 用户输入内容进行初步过滤，防止 XSS 攻击
 const Publish = () => {
   // 使用 useCallback 来缓存选择器
   const setActiveTabIndex = useUserStore(
@@ -19,6 +21,7 @@ const Publish = () => {
   const triggerProfileRefresh = useUIStore(
     (state) => state.triggerProfileRefresh
   );
+  const triggerHomeRefresh = useUIStore((state) => state.triggerHomeRefresh);
 
   const [files, setFiles] = useState([]);
   const [content, setContent] = useState("");
@@ -80,6 +83,14 @@ const Publish = () => {
       setUploading(true);
       console.log("发布本地文件:", files);
 
+      const sanitizedTitle = DOMpurify.sanitize(title.trim(), {
+        USE_PROFILES: { html: false, math: false, svg: false },
+      });
+      const sanitizedContent = DOMpurify.sanitize(content.trim());
+
+      console.log("sanitizedTitle:", sanitizedTitle);
+      console.log("sanitizedContent:", sanitizedContent);
+
       const uploadedOSSUrl = await Promise.all(
         files.map((file) => uploadSingleFileToOSS(file))
       );
@@ -87,8 +98,8 @@ const Publish = () => {
       console.log("oss :", uploadedOSSUrl);
       // 这里可以调用创建游记的 API
       const params = {
-        title: title.trim(),
-        content: content.trim(),
+        title: sanitizedTitle,
+        content: sanitizedContent,
         mediaType: files[0].type,
         detailType: files[0].orientation,
       };
@@ -112,6 +123,7 @@ const Publish = () => {
       setContent("");
 
       triggerProfileRefresh();
+      triggerHomeRefresh();
 
       Taro.switchTab({ url: "/pages/profile/index" });
     } catch (error) {

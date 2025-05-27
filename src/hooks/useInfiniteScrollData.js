@@ -30,9 +30,9 @@ export const useInfiniteScrollData = ({
   // 防止并发的“加载更多”请求
   const isLoadingMoreRef = useRef(false);
 
-  // 新增：用于存储当前活动的 requestTask (或带有 abort 方法的 Promise-like 对象)
+  // 用于存储当前活动的 requestTask (或带有 abort 方法的 Promise-like 对象)
   const activeRequestRef = useRef(null);
-  // 新增：用于在异步回调中检查组件是否仍挂载
+  // 用于在异步回调中检查组件是否仍挂载
   const isMountedRef = useRef(true);
 
   // 组件挂载与卸载时更新 isMountedRef

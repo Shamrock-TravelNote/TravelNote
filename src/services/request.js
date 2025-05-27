@@ -55,8 +55,8 @@ instance.interceptors.request.use(
       config.headers["Content-Type"] = "application/json";
     }
 
-    console.log("headers:", config.headers);
-    console.log("headers(JSON)", JSON.stringify(config.headers));
+    // console.log("headers:", config.headers);
+    // console.log("headers(JSON)", JSON.stringify(config.headers));
     return config;
   },
   (error) => {

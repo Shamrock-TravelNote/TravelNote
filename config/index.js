@@ -45,7 +45,10 @@ export default defineConfig(async (merge, { command, mode }) => {
         },
       },
       webpackChain(chain) {
-        chain.devtool("source-map");
+        chain
+          .devtool("source-map")
+          .plugin("analyzer")
+          .use(require("webpack-bundle-analyzer").BundleAnalyzerPlugin, []);
       },
       debugReact: true,
       sourceMapType: "source-map",
